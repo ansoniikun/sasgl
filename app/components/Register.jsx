@@ -2,195 +2,90 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../lib/config";
 
 const Register = () => {
-  const [form, setForm] = useState({
-    clubName: "",
-    clubEmail: "",
-    clubPhone: "",
-    isPrivateClub: false,
-    clubLogo: null,
-    clubDescription: "",
-    captainFirstName: "",
-    captainLastName: "",
-    captainEmail: "",
-    captainContactNo: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [registered, setRegistered] = useState(false);
+  const router = useRouter();
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setForm({ ...form, clubLogo: e.target.files[0] });
-  };
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    // Add your registration logic here
-    console.log("Registering:", form);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Registration failed");
+
+      // Set registration success state
+      setRegistered(true);
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (err) {
+      alert(err.message);
+    }
   };
+
+  if (registered) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+          <h2 className="text-2xl text-dark-gold mb-4">
+            Registration Successful!
+          </h2>
+          <p className="text-gray-700">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 pt-32 pb-14">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-dark-gold mb-6">
-          Club Registration
+        <h2 className="text-2xl text-center text-dark-gold mb-6">
+          Create Your Account
         </h2>
         <form onSubmit={handleRegister} className="space-y-4">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Club Information</h3>
-            <input
-              type="text"
-              name="clubName"
-              placeholder="Club Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.clubName}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="email"
-              name="clubEmail"
-              placeholder="Club Email"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.clubEmail}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="tel"
-              name="clubPhone"
-              placeholder="Club Phone Number"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.clubPhone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <div className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="isPrivateClub"
-                id="isPrivateClub"
-                className="mr-2"
-                checked={form.isPrivateClub}
-                onChange={handleChange}
-              />
-              <label htmlFor="isPrivateClub" className="text-lg font-semibold">
-                Private Club
-              </label>
-            </div>
-
-            {form.isPrivateClub && (
-              <>
-                <div className="mb-2">
-                  <label className="block font-medium mb-1">Club Logo</label>
-                  <input
-                    type="file"
-                    name="clubLogo"
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold"
-                    onChange={handleFileChange}
-                  />
-                </div>
-
-                <div className="mb-2">
-                  <label className="block font-medium mb-1">Description</label>
-                  <textarea
-                    name="clubDescription"
-                    placeholder="Enter club description..."
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold h-24"
-                    value={form.clubDescription}
-                    onChange={handleChange}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">
-              Captain's Information
-            </h3>
-            <input
-              type="text"
-              name="captainFirstName"
-              placeholder="Captain's First Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.captainFirstName}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="text"
-              name="captainLastName"
-              placeholder="Captain's Last Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.captainLastName}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="email"
-              name="captainEmail"
-              placeholder="Captain's Email"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.captainEmail}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="tel"
-              name="captainContactNo"
-              placeholder="Captain's Contact No."
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.captainContactNo}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button
             type="submit"
-            className="w-full bg-dark-gold text-black py-2 rounded font-bold hover:bg-yellow-600 transition"
+            className="w-full bg-dark-gold text-black py-2 rounded  transition"
           >
-            Save
+            Register
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">

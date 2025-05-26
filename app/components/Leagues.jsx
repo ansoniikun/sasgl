@@ -1,164 +1,178 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../lib/config";
 
 const Leagues = () => {
-  // Golf league data
-  const leagues = [
-    {
-      id: 1,
-      name: "Club Championship",
-      type: "Stroke Play",
-      participants: 48,
-      startDate: "2024-09-15",
-      endDate: "2025-09-17",
-      location: "Pine Valley Golf Club",
-      status: "Ongoing",
-      handicapRequired: true,
-    },
-    {
-      id: 2,
-      name: "Summer Match Play League",
-      type: "Match Play",
-      participants: 32,
-      startDate: "2024-06-01",
-      endDate: "2025-08-31",
-      location: "Oakmont Country Club",
-      status: "Ongoing",
-      handicapRequired: true,
-    },
-    {
-      id: 3,
-      name: "Winter Scramble Series",
-      type: "Scramble",
-      participants: 20,
-      startDate: "2025-12-01",
-      endDate: "2026-02-28",
-      location: "Desert Palm Golf Resort",
-      status: "Upcoming",
-      handicapRequired: false,
-    },
-    {
-      id: 4,
-      name: "Senior Invitational",
-      type: "Stableford",
-      participants: 60,
-      startDate: "2025-05-01",
-      endDate: "2026-05-03",
-      location: "Golden Age Golf Links",
-      status: "Ongoing",
-      handicapRequired: true,
-    },
-    {
-      id: 5,
-      name: "Twilight 9-Hole League",
-      type: "Medal Play",
-      participants: 40,
-      startDate: "2025-04-15",
-      endDate: "2025-10-15",
-      location: "Sunset Hills Golf Course",
-      status: "Ongoing",
-      handicapRequired: false,
-    },
-    {
-      id: 6,
-      name: "Club Ryder Cup",
-      type: "Team Match Play",
-      participants: 24,
-      startDate: "2025-09-20",
-      endDate: "2026-09-22",
-      location: "Eagle's Nest Golf Club",
-      status: "Upcoming",
-      handicapRequired: true,
-    },
-  ];
+  const [leagues, setLeagues] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showUnauthorizedPopup, setShowUnauthorizedPopup] = useState(false);
+
+  const leaguesPerPage = 6;
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/leagues/active-leagues`);
+        const data = await res.json();
+        setLeagues(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Failed to fetch leagues", error);
+        setLeagues([]);
+      }
+    };
+
+    fetchLeagues();
+  }, []);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "Ongoing":
+    switch (status?.toLowerCase()) {
+      case "active":
         return "bg-green-100 text-green-800";
-      case "Completed":
+      case "completed":
         return "bg-gray-100 text-gray-800";
-      case "Upcoming":
+      case "upcoming":
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const formatGolfType = (type) => {
-    switch (type) {
-      case "Stroke Play":
-        return "Stroke Play";
-      case "Match Play":
-        return " Match Play";
-      case "Scramble":
-        return "Scramble";
-      case "Stableford":
-        return " Stableford";
-      case "Team Match Play":
-        return "Team Match Play";
-      default:
-        return type;
+  const handleViewDetails = async (id, status) => {
+    if (status === "upcoming") return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/leagues/${id}/authorized`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.authorized) {
+        router.push(`/leagues/${id}`);
+      } else {
+        setShowUnauthorizedPopup(true);
+      }
+    } catch (err) {
+      console.error("Authorization check failed:", err);
+      setShowUnauthorizedPopup(true);
     }
   };
 
+  const indexOfLast = currentPage * leaguesPerPage;
+  const indexOfFirst = indexOfLast - leaguesPerPage;
+  const currentLeagues = leagues.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(leagues.length / leaguesPerPage);
+
   return (
-    <div className="container mx-auto px-4 py-36">
-      <h1 className="text-3xl font-bold text-center mb-8 text-dark-gold">
-        Active Leagues
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {leagues.map((league) => (
-          <div
-            key={league.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
-          >
-            <div className="p-6">
-              <div className="flex justify-between items-start">
-                <h2 className="text-xl font-bold mb-2">{league.name}</h2>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
-                    league.status
-                  )}`}
-                >
-                  {league.status}
-                </span>
-              </div>
-
-              <div className="mt-1 mb-3">
-                <span className="text-sm font-medium text-gray-700">
-                  {formatGolfType(league.type)}
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <p className="text-gray-600">
-                  <span className="font-semibold">When:</span>{" "}
-                  {new Date(league.startDate).toLocaleDateString()} -{" "}
-                  {new Date(league.endDate).toLocaleDateString()}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-semibold">Where:</span>{" "}
-                  {league.location}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-semibold">Players:</span>{" "}
-                  {league.participants}
-                </p>
-
-                <p className="text-gray-600">
-                  <span className="font-semibold">Handicap:</span>{" "}
-                  {league.handicapRequired ? "Required" : "Not required"}
-                </p>
-              </div>
-
-              <button className="mt-4 w-full bg-dark-gold text-white py-2 rounded-md font-medium hover:bg-yellow-600 transition">
-                {league.status === "Upcoming" ? "Register Now" : "View Details"}
-              </button>
-            </div>
-          </div>
-        ))}
+    <div>
+      <div
+        className="h-[55vh] bg-cover bg-center flex items-center justify-center"
+        style={{ backgroundImage: "url('/hero1.jpg')" }}
+      >
+        <h1 className="text-4xl md:text-5xl text-white drop-shadow-lg">
+          Active Leagues
+        </h1>
       </div>
+
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentLeagues.map((league) => (
+            <div
+              key={league.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-start">
+                  <h2 className="text-xl font-bold mb-2">{league.name}</h2>
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
+                      league.status
+                    )}`}
+                  >
+                    {league.status}
+                  </span>
+                </div>
+                <div className="mt-1 mb-3">
+                  <span className="text-sm font-medium text-gray-700">
+                    {league.type}
+                  </span>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <p className="text-gray-600">
+                    <span className="font-semibold">When:</span>{" "}
+                    {new Date(league.start_date).toLocaleDateString()} -{" "}
+                    {new Date(league.end_date).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Where:</span>{" "}
+                    {league.location || "TBA"}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Handicap:</span>{" "}
+                    {league.handicap ? "Required" : "Not required"}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Description:</span>{" "}
+                    {league.description}
+                  </p>
+                </div>
+                <button
+                  className="mt-4 w-full bg-dark-gold text-white py-2 rounded-md font-medium hover:bg-yellow-600 transition"
+                  onClick={() => handleViewDetails(league.id, league.status)}
+                >
+                  {league.status === "upcoming"
+                    ? "Register Now"
+                    : "View Details"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-10 space-x-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-gray-700 font-medium">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+      {showUnauthorizedPopup && (
+        <div className="fixed inset-0 bg-black/40 bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+            <h2 className="text-xl font-bold mb-4">Access Denied</h2>
+            <p className="text-gray-700 mb-6">
+              You are not authorized to view this league's details.
+            </p>
+            <button
+              className="px-4 py-2 bg-dark-gold text-white rounded hover:bg-yellow-600 transition"
+              onClick={() => setShowUnauthorizedPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,7 +7,7 @@ const JoinUs = () => {
     <section className="relative h-[40vh] w-full bg-black">
       {/* Content */}
       <div className="h-full flex flex-col justify-center items-center text-center px-4 text-white">
-        <h2 className="text-3xl md:text-4xl font-bold">
+        <h2 className="text-3xl md:text-4xl ">
           <span className="text-dark-gold">Join</span> Club Now
         </h2>
         <div className="w-5 h-1 bg-dark-gold mt-3 mb-4" />

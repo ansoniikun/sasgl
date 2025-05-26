@@ -36,7 +36,7 @@ const Contact = () => {
       <div className="relative z-10 max-w-4xl mx-auto text-white py-20 px-4">
         {/* Heading */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <h2 className="text-3xl md:text-4xl ">
             <span className="text-white">Join Our </span>
             <span className="text-dark-gold">Network</span>
           </h2>

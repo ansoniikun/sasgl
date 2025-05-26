@@ -6,21 +6,21 @@ const Events = () => {
     {
       id: 1,
       name: "Club Anniversary Tournament",
-      date: "2023-10-15",
+      date: "2025-10-15",
       location: "Main Club Ground",
       type: "Annual",
     },
     {
       id: 2,
-      name: "Winter Gala",
-      date: "2023-12-20",
+      name: "Summer Gala",
+      date: "2025-12-20",
       location: "Club Pavilion",
       type: "Annual",
     },
     {
       id: 3,
       name: "Founder's Day Match",
-      date: "2024-03-05",
+      date: "2025-03-05",
       location: "Historic Ground",
       type: "Annual",
     },
@@ -31,7 +31,7 @@ const Events = () => {
     {
       id: 4,
       name: "Summer Open Championship",
-      date: "2023-07-08",
+      date: "2025-07-08",
       registrationDeadline: "2023-06-20",
       teamsRegistered: 12,
       maxTeams: 16,
@@ -40,7 +40,7 @@ const Events = () => {
     {
       id: 5,
       name: "Junior Development Series",
-      date: "2023-08-12",
+      date: "2025-08-12",
       registrationDeadline: "2023-07-28",
       teamsRegistered: 8,
       maxTeams: 12,
@@ -49,7 +49,7 @@ const Events = () => {
     {
       id: 6,
       name: "Community Shield",
-      date: "2023-09-03",
+      date: "2025-09-03",
       registrationDeadline: "2023-08-20",
       teamsRegistered: 6,
       maxTeams: 8,

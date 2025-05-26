@@ -1,34 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Replace this with your actual auth check
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   const links = [
     { name: "Home", href: "/" },
     { name: "Active Leagues", href: "/leagues" },
     { name: "Shop", href: "/shop" },
     { name: "Contact Us", href: "/#contact" },
-    { name: "Login", href: "/login", isButton: true },
+    {
+      name: "Login",
+      href: isAuthenticated ? "/dashboard" : "/login",
+      isButton: true,
+    },
   ];
 
   return (
-    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 bg-white/40 backdrop-blur-md shadow max-w-7xl w-full">
-      <div className="px-5 py-4 flex justify-between items-center">
+    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 bg-white/40  backdrop-blur-md shadow max-w-7xl w-full">
+      <div className="px-5 py-3 flex justify-between items-center">
         {/* Logo */}
-        <div className="w-40 h-20 relative">
-          <Image
-            src="/logo.jpg"
-            alt="Logo"
-            layout="fill"
-            objectFit="contain"
-            priority
-          />
-        </div>
+        <Image
+          src="/logo.jpg"
+          alt="Logo"
+          width={200}
+          height={200}
+          className="object-contain h-fill"
+          priority
+        />
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6 items-center">
@@ -36,7 +46,7 @@ const Navbar = () => {
             <Link
               key={link.name}
               href={link.href}
-              className={`${
+              className={`hover:text-dark-gold ${
                 link.isButton &&
                 " px-4 py-1 rounded-md bg-dark-gold text-white transition"
               } uppercase`}
@@ -60,13 +70,13 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden flex flex-col items-center py-4 animate-slide-down">
+        <div className="md:hidden flex flex-col items-center py-4 animate-slide-down bg-black/40">
           {links.map((link, index) => (
             <Link
               key={link.name}
               href={link.href}
-              className={`py-2 text-gray-800  hover:text-dark-gold transition w-full text-center uppercase ${
-                index < links.length - 1 ? "border-b border-gray-300" : ""
+              className={`py-2 text-white hover:text-dark-gold transition w-full text-center uppercase ${
+                index < links.length - 1 ? "border-b border-dark-gold" : ""
               }`}
               onClick={() => setIsOpen(false)}
             >

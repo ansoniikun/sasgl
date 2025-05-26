@@ -28,7 +28,7 @@ const Services = () => {
     <section className="max-w-6xl mx-auto px-4 py-16">
       {/* Heading */}
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">
+        <h2 className="text-3xl md:text-4xl f">
           <span className="text-black">Our </span>
           <span className="text-dark-gold">Services</span>
         </h2>
