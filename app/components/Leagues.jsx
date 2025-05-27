@@ -85,6 +85,12 @@ const Leagues = () => {
               key={league.id}
               className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
             >
+              <img
+                src={`${league.logo_url}`}
+                alt="Club Logo"
+                className="w-full h-48 object-cover"
+              />
+
               <div className="p-6">
                 <div className="flex justify-between items-start">
                   <h2 className="text-xl font-bold mb-2">{league.name}</h2>
@@ -104,16 +110,7 @@ const Leagues = () => {
                 <div className="mt-4 space-y-2">
                   <p className="text-gray-600">
                     <span className="font-semibold">When:</span>{" "}
-                    {new Date(league.start_date).toLocaleDateString()} -{" "}
-                    {new Date(league.end_date).toLocaleDateString()}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Where:</span>{" "}
-                    {league.location || "TBA"}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Handicap:</span>{" "}
-                    {league.handicap ? "Required" : "Not required"}
+                    {new Date(league.start_date).toLocaleDateString()}
                   </p>
                   <p className="text-gray-600">
                     <span className="font-semibold">Description:</span>{" "}

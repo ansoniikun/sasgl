@@ -129,6 +129,40 @@ const ClubDashboard = () => {
     }
   };
 
+  const rejectMember = async (memberId) => {
+    const token = getToken();
+    if (!token) {
+      alert("You must be logged in.");
+      return;
+    }
+
+    setApprovingIds((prev) => new Set(prev).add(memberId));
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/clubs/${clubData.id}/members/${memberId}/reject`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.ok) {
+        setMembers((prev) => prev.filter((m) => m.id !== memberId));
+      } else {
+        alert("Failed to reject member");
+      }
+    } catch (err) {
+      console.error("Error rejecting member:", err);
+      alert("Error rejecting member");
+    } finally {
+      setApprovingIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(memberId);
+        return newSet;
+      });
+    }
+  };
+
   if (loading)
     return <div className="p-6 text-center">Loading club data...</div>;
 
@@ -168,7 +202,7 @@ const ClubDashboard = () => {
 
         {clubData.logo_url && (
           <img
-            src={`${BASE_URL}${clubData.logo_url}`}
+            src={`${clubData.logo_url}`}
             alt={`${clubData.name} Logo`}
             className="h-28 w-28 sm:h-32 sm:w-32 object-cover rounded shadow mb-4"
           />
@@ -231,15 +265,26 @@ const ClubDashboard = () => {
                           Approved
                         </span>
                       ) : currentUserRole === "captain" ? (
-                        <button
-                          onClick={() => approveMember(member.id)}
-                          disabled={approvingIds.has(member.id)}
-                          className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {approvingIds.has(member.id)
-                            ? "Approving..."
-                            : "Approve"}
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => approveMember(member.id)}
+                            disabled={approvingIds.has(member.id)}
+                            className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {approvingIds.has(member.id)
+                              ? "Approving..."
+                              : "Approve"}
+                          </button>
+                          <button
+                            onClick={() => rejectMember(member.id)}
+                            disabled={approvingIds.has(member.id)}
+                            className="px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {approvingIds.has(member.id)
+                              ? "Rejecting..."
+                              : "Reject"}
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-yellow-600 font-medium">
                           Pending Approval

@@ -8,6 +8,9 @@ import { API_BASE_URL } from "../lib/config";
 const ClubRegister = () => {
   const [token, setToken] = useState(null);
   const [successful, setSuccessful] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -75,12 +78,15 @@ const ClubRegister = () => {
       if (res.ok) {
         setSuccessful(true);
       } else {
-        setSuccessful(false);
-        alert(result.message || "Registration failed. Try again.");
+        setPopupMessage(result.message || "Registration failed.");
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 3000);
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong. Please try again later.");
+      setPopupMessage("Something went wrong. Please try again later.");
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000);
     }
   };
 
@@ -259,6 +265,24 @@ const ClubRegister = () => {
                 Register
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+            <h2 className="text-xl font-bold text-red-600 mb-4">
+              Cannot Create Club
+            </h2>
+            <p className="text-gray-700 mb-4">
+              You already have an existing club.
+            </p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="px-4 py-2 bg-dark-gold text-black font-semibold rounded hover:bg-yellow-600 transition"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

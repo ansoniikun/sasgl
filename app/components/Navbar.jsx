@@ -21,7 +21,7 @@ const Navbar = () => {
     { name: "Shop", href: "/shop" },
     { name: "Contact Us", href: "/#contact" },
     {
-      name: "Login",
+      name: isAuthenticated ? "Dashboard" : "Login",
       href: isAuthenticated ? "/dashboard" : "/login",
       isButton: true,
     },
