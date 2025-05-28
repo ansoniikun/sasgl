@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ClubEventCard from "../components/ClubEventCard";
 import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
+import Image from "next/image";
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -193,124 +194,110 @@ const ClubDashboard = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24">
-      <DashboardNav />
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 pt-20">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6">
-          {clubData.name} Dashboard
-        </h1>
+    <div className="">
+      {/* Background Banner */}
+      <div
+        className="h-[40vh] bg-cover bg-center"
+        style={{ backgroundImage: "url('/clubdash.png')" }}
+      ></div>
 
-        {clubData.logo_url && (
-          <img
-            src={`${clubData.logo_url}`}
-            alt={`${clubData.name} Logo`}
-            className="h-28 w-28 sm:h-32 sm:w-32 object-cover rounded shadow mb-4"
-          />
-        )}
-
-        <div className="space-y-2 text-sm sm:text-base text-gray-700 mb-10">
-          <p>
-            <span className="font-semibold">Captain:</span>{" "}
-            {clubData.captain_name}
-          </p>
-          <p>
-            <span className="font-semibold">Phone:</span>{" "}
-            {clubData.captain_contact_no}
-          </p>
-          <p>
-            <span className="font-semibold">Private:</span>{" "}
-            {clubData.is_private ? "Yes" : "No"}
-          </p>
-          <p>
-            <span className="font-semibold">Description:</span>{" "}
-            {clubData.description}
-          </p>
-        </div>
-
-        {/* Club Members */}
-        <div className="mt-10">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-            Club Members
-          </h2>
-          {members.length === 0 ? (
-            <p className="text-gray-500">No members found.</p>
-          ) : (
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {members.map((member, index) => (
+      {/* Tabs */}
+      <div className="w-screen bg-gray-100">
+        <div className="lg:max-w-2xl lg:ml-[25vw]">
+          <ul className="flex text-sm sm:text-base text-ash-gray">
+            {["Club Members", "Club Events", "Billing", "Subscriptions"].map(
+              (tab) => (
                 <li
-                  key={member.id || member.email || index}
-                  className="bg-white p-4 rounded shadow flex items-center gap-4"
+                  key={tab}
+                  className="py-3 px-5 cursor-pointer hover:text-dark-green hover:font-semibold border-b-2 border-transparent hover:border-dark-green"
                 >
-                  <img
-                    src={
-                      member.avatar_url
-                        ? `${BASE_URL}${member.avatar_url}`
-                        : "/carousel1.jpg"
-                    }
-                    alt={member.name || "Member avatar"}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-800">{member.name}</p>
-                    <p className="text-sm text-gray-600">{member.email}</p>
-                    <p className="text-sm text-gray-600">{member.role}</p>
-                    {member.handicap !== undefined && (
-                      <p className="text-sm text-gray-600">
-                        Handicap: {member.handicap}
-                      </p>
-                    )}
-                    <div className="mt-1 flex items-center gap-2">
-                      {member.status === "approved" ? (
-                        <span className="text-green-600 font-medium flex items-center gap-1">
-                          Approved
-                        </span>
-                      ) : currentUserRole === "captain" ? (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => approveMember(member.id)}
-                            disabled={approvingIds.has(member.id)}
-                            className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {approvingIds.has(member.id)
-                              ? "Approving..."
-                              : "Approve"}
-                          </button>
-                          <button
-                            onClick={() => rejectMember(member.id)}
-                            disabled={approvingIds.has(member.id)}
-                            className="px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {approvingIds.has(member.id)
-                              ? "Rejecting..."
-                              : "Reject"}
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-yellow-600 font-medium">
-                          Pending Approval
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  {tab}
                 </li>
+              )
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex w-full flex-wrap items-start gap-4 px-5">
+        {/* Table */}
+        <div className="lg:ml-[25vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
+          <table className="w-full text-sm table-auto">
+            <thead className="bg-gray-50 text-left border-b-1 border-b-gray-200 font-normal">
+              <tr>
+                <th className="p-3 font-normal">No</th>
+                <th className="p-3 font-normal">Player Role</th>
+                <th className="p-3 font-normal">Player Name</th>
+                <th className="p-3 font-normal">Player Email</th>
+                <th className="p-3 font-normal">Status</th>
+                <th className="p-3 font-normal">Date Joined</th>
+                <th className="p-3 font-normal">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member, index) => (
+                <tr key={member.id} className=" hover:bg-gray-50">
+                  <td className="p-3">{index + 1}</td>
+                  <td className="p-3 capitalize">{member.role}</td>
+                  <td className="p-3">{member.name}</td>
+                  <td className="p-3">{member.email}</td>
+                  <td className="p-3 text-lumo-green capitalize">
+                    {member.status}
+                  </td>
+                  <td className="p-3">
+                    {(() => {
+                      const date = new Date(member.joined_at);
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const month = String(date.getMonth() + 1).padStart(
+                        2,
+                        "0"
+                      ); // Months are 0-indexed
+                      const year = date.getFullYear();
+                      return `${day}/${month}/${year}`;
+                    })()}
+                  </td>
+                  <td className="p-3">{member.score ?? 0}</td>
+                </tr>
               ))}
-            </ul>
-          )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Club Events */}
-        <div className="mt-16">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-            Club Events
+        {/* Poster */}
+        <div className="w-full lg:w-1/6 mt-5 px-5 lg:mr-[3vw] ">
+          <img
+            src="/ad.png"
+            alt="Event Poster"
+            className="rounded-xl shadow-lg object-cover w-full h-full"
+          />
+        </div>
+      </div>
+
+      {/* Club info card */}
+      <div className="absolute lg:top-[20vh] lg:left-20 w-[90%] left-10 lg:w-[20%] z-20">
+        <div className="bg-white rounded-2xl shadow-xl p-6 text-center lg:text-left flex flex-col items-center">
+          <Image
+            src={clubData.logo_url || "/placeholder.png"}
+            alt="Club Logo"
+            width={128}
+            height={128}
+            className="rounded-full mb-4 object-contain"
+          />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {clubData.name}
           </h2>
-          {clubEvents.length === 0 ? (
-            <p className="text-gray-500">No events found for this club.</p>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {clubEvents.map((event) => (
-                <ClubEventCard key={event.id} event={event} />
-              ))}
-            </div>
+          <p className="text-sm text-gray-600">{clubData.description}</p>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
+            Edit Profile
+          </button>
+          {["chairman", "captain"].includes(currentUserRole) && (
+            <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
+              Help & Support
+            </button>
           )}
         </div>
       </div>

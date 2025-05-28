@@ -43,7 +43,7 @@ const Register = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
-          <h2 className="text-2xl text-dark-gold mb-4">
+          <h2 className="text-2xl text-dark-green mb-4">
             Registration Successful!
           </h2>
           <p className="text-gray-700">Redirecting to login...</p>
@@ -73,7 +73,7 @@ const Register = () => {
             <Image src="/logo.jpg" alt="Logo" width={60} height={60} />
           </div>
 
-          <h2 className="text-4xl font-semibold mb-0 text-dark-green">
+          <h2 className="text-4xl font-semibold mb-0 text-ash-gray">
             Create Your Account
           </h2>
           <p className="text-lg text-gray-400">

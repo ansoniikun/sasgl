@@ -62,7 +62,7 @@ const Login = () => {
             <Image src="/logo.jpg" alt="Logo" width={60} height={60} />
           </div>
 
-          <h2 className="text-4xl font-semibold mb-0 text-pale-green">
+          <h2 className="text-4xl font-semibold mb-0 text-ash-gray">
             Welcome Back!
           </h2>
           <p className="text-lg text-gray-400">
