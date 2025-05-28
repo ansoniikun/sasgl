@@ -5,9 +5,9 @@ import Register from "../components/Register";
 export default function Home() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Register />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
