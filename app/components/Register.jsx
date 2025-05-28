@@ -128,7 +128,7 @@ const Register = () => {
               type="submit"
               className="w-full bg-dark-green text-white py-2 rounded-md hover:opacity-90 transition"
             >
-              Register
+              Sign up
             </button>
           </form>
 

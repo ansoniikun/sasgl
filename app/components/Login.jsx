@@ -119,7 +119,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-dark-green text-white py-2 rounded-md hover:opacity-90 transition"
             >
-              Login
+              Sign In
             </button>
           </form>
 
