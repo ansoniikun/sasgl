@@ -269,7 +269,7 @@ const ClubDashboard = () => {
         </div>
 
         {/* Poster */}
-        <div className="hidden lg:block lg:min-w-[300px] lg:h-[450px] mt-5 px-5 lg:mr-[1vw] lg:ml-[1vw]">
+        <div className="hidden lg:block lg:min-w-[300px] lg:h-[400px] mt-5 px-5 lg:mr-[1vw] lg:ml-[1vw]">
           <img
             src="/ad.png"
             alt="Event Poster"
