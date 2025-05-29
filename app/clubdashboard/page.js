@@ -280,12 +280,12 @@ const ClubDashboard = () => {
 
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
-        <div className="bg-white rounded-xl shadow-2xl p-6 text-center lg:text-left flex flex-col items-center h-[60vh]">
+        <div className="bg-white rounded-xl shadow-2xl p-6 pt-10 text-center lg:text-left flex flex-col items-center h-[65vh]">
           <Image
             src={clubData.logo_url || "/placeholder.png"}
             alt="Club Logo"
             width={200}
-            height={200}
+            height={180}
             className="rounded-full mb-4 object-contain"
           />
           <h2 className="text-3xl font-semibold text-ash-gray mb-2">
