@@ -202,7 +202,7 @@ const ClubDashboard = () => {
       ></div>
 
       {/* Tabs */}
-      <div className="w-screen bg-gray-100">
+      <div className="w-screen bg-gray-50">
         <div className="lg:max-w-2xl lg:ml-[25vw]">
           <ul className="flex text-sm sm:text-base text-ash-gray">
             {[
@@ -228,7 +228,7 @@ const ClubDashboard = () => {
         {/* Table */}
         <div className="lg:ml-[25vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
           <table className="w-full text-sm table-auto">
-            <thead className="text-left border-b-1 border-b-gray-200 font-normal">
+            <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
               <tr>
                 <th className="p-3 font-normal">No</th>
                 <th className="p-3 font-normal">Player Role</th>
@@ -241,7 +241,7 @@ const ClubDashboard = () => {
             </thead>
             <tbody>
               {members.map((member, index) => (
-                <tr key={member.id} className=" hover:bg-gray-50">
+                <tr key={member.id} className=" hover:bg-gray-50 text-ash-gray">
                   <td className="p-3">{index + 1}</td>
                   <td className="p-3 capitalize">{member.role}</td>
                   <td className="p-3">{member.name}</td>
