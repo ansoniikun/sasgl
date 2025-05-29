@@ -288,10 +288,10 @@ const ClubDashboard = () => {
             height={200}
             className="rounded-full mb-4 object-contain"
           />
-          <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-3xl font-semibold text-ash-gray mb-2">
             {clubData.name}
           </h2>
-          <p className="text-sm text-gray-600">{clubData.description}</p>
+          <p className="text-sm text-gray-500">{clubData.description}</p>
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
