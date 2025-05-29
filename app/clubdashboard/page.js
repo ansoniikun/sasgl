@@ -345,6 +345,184 @@ const ClubDashboard = () => {
         </div>
       )}
 
+      {activeTab === "Capture Scores" && (
+        <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-8 w-full max-w-6xl">
+          <h2 className="text-xl font-semibold text-gray-700 mb-6">
+            Capture Score
+          </h2>
+          <form
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const payload = {
+                playerName: formData.get("playerName"),
+                playerScore: formData.get("playerScore"),
+                birdies: formData.get("birdies"),
+                strokes: formData.get("strokes"),
+                putts: formData.get("putts"),
+                greensInRegulation: formData.get("greensInRegulation"),
+                fairwaysHit: formData.get("fairwaysHit"),
+                penalties: formData.get("penalties"),
+              };
+
+              try {
+                const res = await fetch(`${API_BASE_URL}/api/scores`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`,
+                  },
+                  body: JSON.stringify(payload),
+                });
+
+                if (res.ok) {
+                  alert("Score successfully submitted!");
+                  e.target.reset();
+                } else {
+                  alert("Failed to submit score");
+                }
+              } catch (err) {
+                console.error(err);
+                alert("An error occurred");
+              }
+            }}
+          >
+            {/* Player Name */}
+            <div className="flex flex-col">
+              <label htmlFor="playerName" className="font-medium text-gray-700">
+                Player Name<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="playerName"
+                placeholder="Ash Maleke"
+                required
+                className="border border-gray-300 rounded px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+              />
+            </div>
+
+            {/* Player Score */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="playerScore"
+                className="font-medium text-gray-700"
+              >
+                Player Score<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="playerScore"
+                placeholder="0"
+                required
+                className="border border-gray-300 rounded px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+              />
+            </div>
+
+            {/* Birdies */}
+            <div className="flex flex-col">
+              <label htmlFor="birdies" className="font-medium text-gray-700">
+                Birdies
+              </label>
+              <input
+                type="number"
+                name="birdies"
+                placeholder="0"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Strokes */}
+            <div className="flex flex-col">
+              <label htmlFor="strokes" className="font-medium text-gray-700">
+                Strokes
+              </label>
+              <input
+                type="number"
+                name="strokes"
+                placeholder="0"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Putts */}
+            <div className="flex flex-col">
+              <label htmlFor="putts" className="font-medium text-gray-700">
+                Putts
+              </label>
+              <input
+                type="number"
+                name="putts"
+                placeholder="0"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Greens in Regulation */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="greensInRegulation"
+                className="font-medium text-gray-700"
+              >
+                Greens in Regulation
+              </label>
+              <input
+                type="number"
+                name="greensInRegulation"
+                placeholder="0"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Fairways Hit */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="fairwaysHit"
+                className="font-medium text-gray-700"
+              >
+                Fairways Hit
+              </label>
+              <input
+                type="number"
+                name="fairwaysHit"
+                placeholder="0"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Penalties */}
+            <div className="flex flex-col">
+              <label htmlFor="penalties" className="font-medium text-gray-700">
+                Penalties
+              </label>
+              <input
+                type="number"
+                name="penalties"
+                placeholder="Rulani"
+                className="border border-gray-300 rounded px-4 py-2 mt-1 placeholder:text-sm"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="col-span-full flex gap-4 mt-4">
+              <button
+                type="button"
+                onClick={() => setActiveTab("Club Members")}
+                className="bg-ash-gray text-white font-semibold px-6 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-dark-green text-white font-semibold px-6 py-2 rounded-md "
+              >
+                Submit Stats
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
         <div className="bg-white rounded-xl shadow-2xl p-6 pt-10 text-center lg:text-left flex flex-col items-center h-[65vh]">
