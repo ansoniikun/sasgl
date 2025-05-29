@@ -360,7 +360,7 @@ const ClubDashboard = () => {
           </h2>
           <p className="text-sm text-gray-500 max-w-[90%]">{`${clubData.description} Golf Doza Za is a welcoming and well-appointed golf club that offers an enjoyable experience for players of all skill levels. Known for its beautifully maintained course and relaxed atmosphere, the club is a perfect destination for both casual rounds and competitive play.`}</p>
           <br></br>
-          <p className="text-sm text-gray-500 max-w-[90%]">
+          <p className="hidden  text-gray-500 max-w-[90%]">
             With a commitment to quality and community, Golf Doza Za provides
             excellent facilities, including a full-length driving range, putting
             greens, a pro shop, and a comfortable clubhouse for post-game
