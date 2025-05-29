@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const nunito = Nunito_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700"], // pick weights you need
+  display: "swap",
+});
+
 export const metadata = {
   title: "South Africa Social Golf League",
   description: "South Africa's fastest growing golf social league",
@@ -21,14 +27,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${nunito.className} antialiased`}
       >
         {children}
       </body>
