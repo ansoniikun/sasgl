@@ -215,9 +215,13 @@ const ClubDashboard = () => {
     <div className="">
       {/* Background Banner */}
       <div
-        className="h-[40vh] bg-cover bg-center"
+        className="relative h-[40vh] bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: "url('/clubdash.png')" }}
-      ></div>
+      >
+        <h1 className="text-white text-4xl font-bold drop-shadow-lg">
+          Club Dashboard
+        </h1>
+      </div>
 
       {/* Tabs */}
       <div className="w-screen bg-gray-50">
