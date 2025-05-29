@@ -205,16 +205,20 @@ const ClubDashboard = () => {
       <div className="w-screen bg-gray-100">
         <div className="lg:max-w-2xl lg:ml-[25vw]">
           <ul className="flex text-sm sm:text-base text-ash-gray">
-            {["Club Members", "Club Events", "Billing", "Subscriptions"].map(
-              (tab) => (
-                <li
-                  key={tab}
-                  className="py-3 px-5 cursor-pointer hover:text-dark-green hover:font-semibold border-b-2 border-transparent hover:border-dark-green"
-                >
-                  {tab}
-                </li>
-              )
-            )}
+            {[
+              "Club Members",
+              "Club Scores",
+              "Club Events",
+              "Billing",
+              "Subscriptions",
+            ].map((tab) => (
+              <li
+                key={tab}
+                className="py-3 px-5 cursor-pointer hover:text-dark-green hover:font-semibold border-b-2 border-transparent hover:border-dark-green"
+              >
+                {tab}
+              </li>
+            ))}
           </ul>
         </div>
       </div>
@@ -224,7 +228,7 @@ const ClubDashboard = () => {
         {/* Table */}
         <div className="lg:ml-[25vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
           <table className="w-full text-sm table-auto">
-            <thead className="bg-gray-50 text-left border-b-1 border-b-gray-200 font-normal">
+            <thead className="text-left border-b-1 border-b-gray-200 font-normal">
               <tr>
                 <th className="p-3 font-normal">No</th>
                 <th className="p-3 font-normal">Player Role</th>
@@ -257,7 +261,7 @@ const ClubDashboard = () => {
                       return `${day}/${month}/${year}`;
                     })()}
                   </td>
-                  <td className="p-3">{member.score ?? 0}</td>
+                  <td className="p-3">{member.score}</td>
                 </tr>
               ))}
             </tbody>
@@ -265,7 +269,7 @@ const ClubDashboard = () => {
         </div>
 
         {/* Poster */}
-        <div className="w-full lg:w-1/6 mt-5 px-5 lg:mr-[3vw] ">
+        <div className="hidden lg:block lg:min-w-[300px] lg:h-[450px] mt-5 px-5 lg:mr-[1vw] lg:ml-[1vw]">
           <img
             src="/ad.png"
             alt="Event Poster"
@@ -275,16 +279,16 @@ const ClubDashboard = () => {
       </div>
 
       {/* Club info card */}
-      <div className="absolute lg:top-[20vh] lg:left-20 w-[90%] left-10 lg:w-[20%] z-20">
-        <div className="bg-white rounded-2xl shadow-xl p-6 text-center lg:text-left flex flex-col items-center">
+      <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
+        <div className="bg-white rounded-xl shadow-2xl p-6 text-center lg:text-left flex flex-col items-center h-[60vh]">
           <Image
             src={clubData.logo_url || "/placeholder.png"}
             alt="Club Logo"
-            width={128}
-            height={128}
+            width={200}
+            height={200}
             className="rounded-full mb-4 object-contain"
           />
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-3xl font-semibold text-gray-800 mb-2">
             {clubData.name}
           </h2>
           <p className="text-sm text-gray-600">{clubData.description}</p>
@@ -292,7 +296,7 @@ const ClubDashboard = () => {
 
         <div className="mt-4 flex flex-col gap-3">
           <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
-            Edit Profile
+            Edit Club
           </button>
           {["chairman", "captain"].includes(currentUserRole) && (
             <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
