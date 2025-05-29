@@ -16,6 +16,8 @@ const ClubDashboard = () => {
   const [approvingIds, setApprovingIds] = useState(new Set());
   const [clubEvents, setClubEvents] = useState([]);
   const [currentUserRole, setCurrentUserRole] = useState(null);
+  const [activeTab, setActiveTab] = useState("Club Members");
+  const [leagueData, setLeagueData] = useState(null);
 
   const router = useRouter();
 
@@ -65,6 +67,22 @@ const ClubDashboard = () => {
         if (membersRes.ok) {
           const membersData = await membersRes.json();
           setMembers(membersData);
+        }
+
+        if (club?.id) {
+          const leagueRes = await fetch(
+            `${API_BASE_URL}/api/clubs/league/${club.id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (leagueRes.ok) {
+            const data = await leagueRes.json();
+            setLeagueData(data);
+          } else {
+            console.warn("No league data available");
+          }
         }
 
         // Get club events
@@ -203,18 +221,24 @@ const ClubDashboard = () => {
 
       {/* Tabs */}
       <div className="w-screen bg-gray-50">
-        <div className="lg:max-w-2xl lg:ml-[25vw]">
+        <div className="lg:max-w-5xl lg:ml-[25vw]">
           <ul className="flex text-sm sm:text-base text-ash-gray">
             {[
               "Club Members",
-              "Club Scores",
+              "Capture Scores",
+              "Active League",
               "Club Events",
               "Billing",
               "Subscriptions",
             ].map((tab) => (
               <li
                 key={tab}
-                className="py-3 px-5 cursor-pointer hover:text-dark-green hover:font-semibold border-b-2 border-transparent hover:border-dark-green"
+                onClick={() => setActiveTab(tab)}
+                className={`py-3 px-5 cursor-pointer border-2 ${
+                  activeTab === tab
+                    ? "text-white font-semibold border-dark-green bg-dark-green"
+                    : "border-transparent hover:text-white hover:font-semibold hover:border-dark-green hover:bg-dark-green"
+                }`}
               >
                 {tab}
               </li>
@@ -224,31 +248,41 @@ const ClubDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex w-full flex-wrap items-start gap-4 px-5">
-        {/* Table */}
-        <div className="lg:ml-[25vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
+      {/* Table */}
+      {activeTab === "Club Members" && (
+        <div className="lg:ml-[25vw] lg:mr-[3vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
           <table className="w-full text-sm table-auto">
             <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
               <tr>
-                <th className="p-3 font-normal">No</th>
-                <th className="p-3 font-normal">Player Role</th>
-                <th className="p-3 font-normal">Player Name</th>
-                <th className="p-3 font-normal">Player Email</th>
-                <th className="p-3 font-normal">Status</th>
-                <th className="p-3 font-normal">Date Joined</th>
-                <th className="p-3 font-normal">Score</th>
+                <th className="p-5 ">#</th>
+                <th className="p-3 ">Image</th>
+                <th className="p-3 ">Player Role</th>
+                <th className="p-3 ">Player Name</th>
+                <th className="">Player Email</th>
+                <th className="p-3">Date Joined</th>
+                <th className="p-3">Mobile</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Score</th>
               </tr>
             </thead>
             <tbody>
               {members.map((member, index) => (
                 <tr key={member.id} className=" hover:bg-gray-50 text-ash-gray">
-                  <td className="p-3">{index + 1}</td>
-                  <td className="p-3 capitalize">{member.role}</td>
-                  <td className="p-3">{member.name}</td>
-                  <td className="p-3">{member.email}</td>
-                  <td className="p-3 text-lumo-green capitalize">
-                    {member.status}
+                  <td className="pl-5">{index + 1}</td>
+                  <td className="p-3">
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <Image
+                        src="/golfer.jpg"
+                        alt="Club Logo"
+                        width={38}
+                        height={38}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
                   </td>
+                  <td className="p-2 capitalize">{member.role}</td>
+                  <td className="p-2 capitalize">{member.name}</td>
+                  <td className="capitalize">{member.email}</td>
                   <td className="p-3">
                     {(() => {
                       const date = new Date(member.joined_at);
@@ -261,22 +295,51 @@ const ClubDashboard = () => {
                       return `${day}/${month}/${year}`;
                     })()}
                   </td>
+                  <td className="p-3">{`0${Math.floor(
+                    100000000 + Math.random() * 900000000
+                  )}`}</td>
+                  <td className="p-3 text-ash-grey capitalize">
+                    {member.status}
+                  </td>
                   <td className="p-3">{member.score}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
 
-        {/* Poster */}
-        <div className="hidden lg:block lg:min-w-[300px] lg:h-[400px] mt-5 px-5 lg:mr-[1vw] lg:ml-[1vw]">
-          <img
-            src="/ad.png"
-            alt="Event Poster"
-            className="rounded-xl shadow-lg object-cover w-full h-full"
-          />
+      {activeTab === "Active League" && leagueData && (
+        <div className="lg:ml-[25vw] lg:mr-[3vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
+          <table className="w-full text-sm table-auto mt-2">
+            <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
+              <tr>
+                <th className="p-3">#</th>
+                <th className="p-3">Player Name</th>
+                <th className="p-3">Games Played</th>
+                <th className="p-3">Points</th>
+                <th className="p-3">Birdies</th>
+                <th className="p-3">Avg Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leagueData.leaderboard.map((player, index) => (
+                <tr
+                  key={player.user_id}
+                  className="text-ash-gray hover:bg-gray-50"
+                >
+                  <td className="p-3">{index + 1}</td>
+                  <td className="p-3 capitalize">{player.name}</td>
+                  <td className="p-3">{player.games_played}</td>
+                  <td className="p-3">{player.points}</td>
+                  <td className="p-3">{player.birdies}</td>
+                  <td className="p-3">{player.avg_points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      )}
 
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
