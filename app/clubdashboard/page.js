@@ -314,7 +314,7 @@ const ClubDashboard = () => {
       )}
 
       {activeTab === "Active League" && leagueData && (
-        <div className="lg:ml-[25vw] lg:mr-[3vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
+        <div className="ml-[25vw] mr-[5vw] mb-[2vh] flex-1 bg-white rounded-xl shadow-md mt-4">
           <table className="w-full text-sm table-auto mt-2">
             <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
               <tr>
@@ -346,7 +346,7 @@ const ClubDashboard = () => {
       )}
 
       {activeTab === "Capture Scores" && (
-        <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-8 w-full max-w-6xl">
+        <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-8 max-w-5xl">
           <h2 className="text-xl font-semibold text-gray-700 mb-6">
             Capture Score
           </h2>
