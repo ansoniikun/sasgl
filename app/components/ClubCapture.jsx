@@ -1,0 +1,255 @@
+"use client";
+import { useState, useEffect } from "react";
+import { API_BASE_URL } from "../lib/config";
+
+const ClubCapture = () => {
+  const [clubId, setClubId] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [participants, setParticipants] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState("");
+  const [selectedPlayerId, setSelectedPlayerId] = useState("");
+
+  // Get user's club ID
+  useEffect(() => {
+    const fetchClub = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return console.error("No token found");
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/clubs/myclub`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Failed to fetch club");
+        const data = await res.json();
+        setClubId(data.id);
+      } catch (error) {
+        console.error("Failed to fetch club", error);
+      }
+    };
+
+    fetchClub();
+  }, []);
+
+  // Fetch events for the club
+  useEffect(() => {
+    if (!clubId) return;
+
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/clubs/events/${clubId}`);
+        if (!res.ok) throw new Error("Failed to fetch events");
+        const data = await res.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events", error);
+      }
+    };
+
+    fetchEvents();
+  }, [clubId]);
+
+  // Fetch participants for selected event
+  useEffect(() => {
+    if (!selectedEventId) return;
+
+    const fetchParticipants = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/clubs/event-participants/${selectedEventId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch participants");
+        const data = await res.json();
+        setParticipants(data);
+      } catch (error) {
+        console.error("Failed to fetch participants", error);
+      }
+    };
+
+    fetchParticipants();
+  }, [selectedEventId]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const playerScore = Number(formData.get("playerScore"));
+    const points = Number(formData.get("points") || 0);
+    const birdies = Number(formData.get("birdies") || 0);
+    const strokes = Number(formData.get("strokes") || 0);
+    const putts = Number(formData.get("putts") || 0);
+    const greensInRegulation = Number(formData.get("greensInRegulation") || 0);
+    const fairwaysHit = Number(formData.get("fairwaysHit") || 0);
+
+    if (!selectedEventId || !selectedPlayerId || isNaN(playerScore)) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must be logged in.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/clubs/submit-stats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          eventId: selectedEventId,
+          userId: selectedPlayerId,
+          playerScore,
+          points,
+          birdies,
+          strokes,
+          putts,
+          greensInRegulation,
+          fairwaysHit,
+          submittedBy: selectedPlayerId, // or the current user's ID if you track that separately
+          notes: "", // Optional: replace if you want to include notes
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit stats.");
+      }
+
+      alert("Stats submitted successfully!");
+      // Reset form or refresh data if needed
+      e.target.reset();
+      setSelectedEventId("");
+      setSelectedPlayerId("");
+    } catch (err) {
+      console.error("Submission failed:", err);
+      alert("Failed to submit stats.");
+    }
+  };
+
+  return (
+    <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-8 max-w-5xl">
+      <h2 className="text-xl font-semibold text-gray-700 mb-6">
+        Capture Score
+      </h2>
+      <form
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1"
+        onSubmit={handleSubmit}
+      >
+        {/* Event */}
+        <div className="flex flex-col">
+          <label htmlFor="event" className="font-medium text-gray-700">
+            Event<span className="text-red-500">*</span>
+          </label>
+          <select
+            name="event"
+            required
+            value={selectedEventId}
+            onChange={(e) => setSelectedEventId(e.target.value)}
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+          >
+            <option value="">Select an event</option>
+            {events.map((event) => (
+              <option key={event.id} value={event.id}>
+                {event.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Player Name */}
+        <div className="flex flex-col">
+          <label htmlFor="player" className="font-medium text-gray-700">
+            Player Name<span className="text-red-500">*</span>
+          </label>
+          <select
+            name="player"
+            required
+            value={selectedPlayerId}
+            onChange={(e) => setSelectedPlayerId(e.target.value)}
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+          >
+            <option value="">Select a player</option>
+            {participants.map((p) => (
+              <option key={p.user_id} value={p.user_id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Player Score */}
+        <div className="flex flex-col">
+          <label htmlFor="playerScore" className="font-medium text-gray-700">
+            Player Score<span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            name="playerScore"
+            placeholder="0"
+            required
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="points" className="font-medium text-gray-700">
+            Points
+          </label>
+          <input
+            type="number"
+            name="points"
+            placeholder="0"
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+          />
+        </div>
+
+        {/* Other Stats */}
+        {[
+          { name: "birdies", label: "Birdies" },
+          { name: "strokes", label: "Strokes" },
+          { name: "putts", label: "Putts" },
+          { name: "greensInRegulation", label: "Greens in Regulation" },
+          { name: "fairwaysHit", label: "Fairways Hit" },
+          { name: "penalties", label: "Penalties" },
+        ].map(({ name, label }) => (
+          <div className="flex flex-col" key={name}>
+            <label htmlFor={name} className="font-medium text-gray-700">
+              {label}
+            </label>
+            <input
+              type="number"
+              name={name}
+              placeholder="0"
+              className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+            />
+          </div>
+        ))}
+
+        {/* Buttons */}
+        <div className="col-span-full flex gap-4 mt-4">
+          <button
+            type="button"
+            onClick={() => setSelectedEventId("")}
+            className="bg-ash-gray text-white font-semibold px-6 py-2 rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-dark-green text-white font-semibold px-6 py-2 rounded-md"
+          >
+            Submit Stats
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default ClubCapture;
