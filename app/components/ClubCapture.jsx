@@ -134,8 +134,8 @@ const ClubCapture = () => {
   };
 
   return (
-    <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-8 max-w-5xl">
-      <h2 className="text-xl font-semibold text-gray-700 mb-6">
+    <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-5 max-w-5xl">
+      <h2 className="text-xl font-semibold text-gray-700 mb-2">
         Capture Score
       </h2>
       <form
