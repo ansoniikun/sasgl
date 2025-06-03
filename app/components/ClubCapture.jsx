@@ -79,9 +79,6 @@ const ClubCapture = () => {
     const points = Number(formData.get("points") || 0);
     const birdies = Number(formData.get("birdies") || 0);
     const strokes = Number(formData.get("strokes") || 0);
-    const putts = Number(formData.get("putts") || 0);
-    const greensInRegulation = Number(formData.get("greensInRegulation") || 0);
-    const fairwaysHit = Number(formData.get("fairwaysHit") || 0);
 
     if (!selectedEventId || !selectedPlayerId || isNaN(playerScore)) {
       alert("Please fill in all required fields.");
@@ -108,11 +105,8 @@ const ClubCapture = () => {
           points,
           birdies,
           strokes,
-          putts,
-          greensInRegulation,
-          fairwaysHit,
-          submittedBy: selectedPlayerId, // or the current user's ID if you track that separately
-          notes: "", // Optional: replace if you want to include notes
+          submittedBy: selectedPlayerId,
+          notes: "",
         }),
       });
 
@@ -123,7 +117,6 @@ const ClubCapture = () => {
       }
 
       alert("Stats submitted successfully!");
-      // Reset form or refresh data if needed
       e.target.reset();
       setSelectedEventId("");
       setSelectedPlayerId("");
@@ -197,6 +190,8 @@ const ClubCapture = () => {
             className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
           />
         </div>
+
+        {/* Points */}
         <div className="flex flex-col">
           <label htmlFor="points" className="font-medium text-gray-700">
             Points
@@ -209,27 +204,31 @@ const ClubCapture = () => {
           />
         </div>
 
-        {/* Other Stats */}
-        {[
-          { name: "birdies", label: "Birdies" },
-          { name: "strokes", label: "Strokes" },
-          { name: "putts", label: "Putts" },
-          { name: "greensInRegulation", label: "Greens in Regulation" },
-          { name: "fairwaysHit", label: "Fairways Hit" },
-          { name: "penalties", label: "Penalties" },
-        ].map(({ name, label }) => (
-          <div className="flex flex-col" key={name}>
-            <label htmlFor={name} className="font-medium text-gray-700">
-              {label}
-            </label>
-            <input
-              type="number"
-              name={name}
-              placeholder="0"
-              className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
-            />
-          </div>
-        ))}
+        {/* Birdies */}
+        <div className="flex flex-col">
+          <label htmlFor="birdies" className="font-medium text-gray-700">
+            Birdies
+          </label>
+          <input
+            type="number"
+            name="birdies"
+            placeholder="0"
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+          />
+        </div>
+
+        {/* Strokes */}
+        <div className="flex flex-col">
+          <label htmlFor="strokes" className="font-medium text-gray-700">
+            Strokes
+          </label>
+          <input
+            type="number"
+            name="strokes"
+            placeholder="0"
+            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+          />
+        </div>
 
         {/* Buttons */}
         <div className="col-span-full flex gap-4 mt-4">
