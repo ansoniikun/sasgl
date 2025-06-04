@@ -48,32 +48,35 @@ const LeagueDetails = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 container mx-auto px-4 py-16 pt-36">
-        <h1 className="text-3xl font-bold mb-6 text-dark-gold">
+      <main className="flex-1 pt-36">
+        <h1 className="text-3xl font-bold mb-6 text-center text-dark-gold">
           {league?.name} Leaderboard
         </h1>
 
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto border">
-            <thead className="bg-gray-200">
+        <div className="max-w-7xl mx-auto mb-[2vh] flex-1 bg-white rounded-xl shadow-md mt-4">
+          <table className="w-full text-sm table-auto mt-2">
+            <thead className="text-left border-b border-b-gray-200 font-normal text-ash-gray">
               <tr>
-                <th className="px-4 py-2 text-left">Rank</th>
-                <th className="px-4 py-2 text-left">Golfer</th>
-                <th className="px-4 py-2 text-left">Games Played</th>
-                <th className="px-4 py-2 text-left">Points</th>
-                <th className="px-4 py-2 text-left">Avg Points</th>
-                <th className="px-4 py-2 text-left">Birdies</th>
+                <th className="p-3">#</th>
+                <th className="p-3">Player Name</th>
+                <th className="p-3">Games Played</th>
+                <th className="p-3">Points</th>
+                <th className="p-3">Birdies</th>
+                <th className="p-3">Avg Points</th>
               </tr>
             </thead>
             <tbody>
               {leaderboard.map((player) => (
-                <tr key={player.user_id} className="border-b">
-                  <td className="px-4 py-2">{player.position}</td>
-                  <td className="px-4 py-2">{player.name}</td>
-                  <td className="px-4 py-2">{player.games_played}</td>
-                  <td className="px-4 py-2">{player.points}</td>
-                  <td className="px-4 py-2">{player.avg_points.toFixed(2)}</td>
-                  <td className="px-4 py-2">{player.birdies}</td>
+                <tr
+                  key={player.user_id}
+                  className="text-ash-gray hover:bg-gray-50"
+                >
+                  <td className="p-3">{player.position}</td>
+                  <td className="p-3 capitalize">{player.name}</td>
+                  <td className="p-3">{player.games_played}</td>
+                  <td className="p-3">{player.points}</td>
+                  <td className="p-3">{player.birdies}</td>
+                  <td className="p-3">{player.avg_points.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
