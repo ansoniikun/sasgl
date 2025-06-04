@@ -63,7 +63,6 @@ const ClubRegister = () => {
     formData.append("captainLastName", form.captainLastName);
     formData.append("captainEmail", form.captainEmail);
     formData.append("captainContactNo", form.captainContactNo);
-    formData.append("password", form.password);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/clubs/register`, {
@@ -236,7 +235,7 @@ const ClubRegister = () => {
                 />
               </div>
 
-              {/* Password */}
+              {/* Password
               <div className="mb-4">
                 <input
                   type="password"
@@ -256,7 +255,7 @@ const ClubRegister = () => {
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </div> */}
 
               <button
                 type="submit"

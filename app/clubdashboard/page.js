@@ -161,7 +161,7 @@ const ClubDashboard = () => {
       const res = await fetch(
         `${API_BASE_URL}/api/clubs/${clubData.id}/members/${memberId}/reject`,
         {
-          method: "DELETE",
+          method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
@@ -304,8 +304,28 @@ const ClubDashboard = () => {
                     100000000 + Math.random() * 900000000
                   )}`}</td>
                   <td className="p-3 text-ash-grey capitalize">
-                    {member.status}
+                    {member.status === "pending" ? (
+                      <div className="flex gap-2">
+                        <button
+                          disabled={approvingIds.has(member.id)}
+                          onClick={() => approveMember(member.id)}
+                          className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          disabled={approvingIds.has(member.id)}
+                          onClick={() => rejectMember(member.id)}
+                          className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      member.status
+                    )}
                   </td>
+
                   <td className="p-3">{member.score}</td>
                 </tr>
               ))}
@@ -346,7 +366,10 @@ const ClubDashboard = () => {
         </div>
       )}
 
-      {activeTab === "Capture Scores" && <ClubCapture />}
+      {activeTab === "Capture Scores" &&
+        (currentUserRole === "captain" || currentUserRole === "chairman") && (
+          <ClubCapture />
+        )}
 
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
@@ -372,14 +395,14 @@ const ClubDashboard = () => {
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
-          <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
-            Edit Club
-          </button>
           {["chairman", "captain"].includes(currentUserRole) && (
             <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
-              Help & Support
+              Edit Club
             </button>
           )}
+          <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
+            Help & Support
+          </button>
         </div>
       </div>
     </div>
