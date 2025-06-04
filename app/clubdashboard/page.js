@@ -304,7 +304,9 @@ const ClubDashboard = () => {
                     100000000 + Math.random() * 900000000
                   )}`}</td>
                   <td className="p-3 text-ash-grey capitalize">
-                    {member.status === "pending" ? (
+                    {member.status === "pending" &&
+                    (currentUserRole === "captain" ||
+                      currentUserRole === "chairman") ? (
                       <div className="flex gap-2">
                         <button
                           disabled={approvingIds.has(member.id)}
