@@ -275,14 +275,14 @@ const ClubDashboard = () => {
                 <tr key={member.id} className=" hover:bg-gray-50 text-ash-gray">
                   <td className="pl-5">{index + 1}</td>
                   <td className="p-3">
-                    <div className="w-8 h-8 rounded-full overflow-hidden">
-                      <Image
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+                      {/* <Image
                         src="/golfer.jpg"
                         alt="Club Logo"
                         width={38}
                         height={38}
                         className="object-cover w-full h-full"
-                      />
+                      /> */}
                     </div>
                   </td>
                   <td className="p-2 capitalize">{member.role}</td>
