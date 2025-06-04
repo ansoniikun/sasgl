@@ -110,7 +110,11 @@ const Leagues = () => {
                 <div className="mt-4 space-y-2">
                   <p className="text-gray-600">
                     <span className="font-semibold">When:</span>{" "}
-                    {new Date(league.start_date).toLocaleDateString()}
+                    {new Date(league.start_date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
                   </p>
                   <p className="text-gray-600">
                     <span className="font-semibold">Description:</span>{" "}
