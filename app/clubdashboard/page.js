@@ -369,9 +369,13 @@ const ClubDashboard = () => {
       )}
 
       {activeTab === "Capture Scores" &&
-        (currentUserRole === "captain" || currentUserRole === "chairman") && (
+        (currentUserRole === "captain" || currentUserRole === "chairman" ? (
           <ClubCapture />
-        )}
+        ) : (
+          <div className=" max-w-3xl mx-auto p-4 text-red-600 font-semibold">
+            Only club captain and chairman can access this page.
+          </div>
+        ))}
 
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
