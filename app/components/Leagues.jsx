@@ -14,7 +14,9 @@ const Leagues = () => {
   useEffect(() => {
     const fetchLeagues = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/leagues/active-leagues`);
+        const res = await fetch(
+          `${API_BASE_URL}/api/leagues/active-leagues?t=${Date.now()}`
+        );
         const data = await res.json();
         setLeagues(Array.isArray(data) ? data : []);
       } catch (error) {

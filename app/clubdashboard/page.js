@@ -7,6 +7,7 @@ import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
 import Image from "next/image";
 import ClubCapture from "../components/ClubCapture";
+import CreateClubEventForm from "../components/CreateClubEvents";
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -19,6 +20,7 @@ const ClubDashboard = () => {
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState("Club Members");
   const [leagueData, setLeagueData] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const router = useRouter();
 
@@ -376,6 +378,43 @@ const ClubDashboard = () => {
             Only club captain and chairman can access this page.
           </div>
         ))}
+
+      {activeTab === "Club Events" && (
+        <div className="lg:ml-[25vw] lg:mr-[3vw] py-4 relative">
+          {(currentUserRole === "captain" ||
+            currentUserRole === "chairman") && (
+            <>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="mb-4 px-4 py-2 bg-dark-green text-white rounded"
+              >
+                Create Club Event
+              </button>
+
+              {showCreateModal && (
+                <CreateClubEventForm
+                  clubId={clubData.id}
+                  onEventCreated={(newEvent) => {
+                    setClubEvents((prev) => [...prev, newEvent]);
+                    setShowCreateModal(false);
+                  }}
+                  onClose={() => setShowCreateModal(false)}
+                />
+              )}
+            </>
+          )}
+
+          {clubEvents.length === 0 ? (
+            <p className="text-center text-gray-600">No events yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {clubEvents.map((event) => (
+                <ClubEventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">

@@ -20,8 +20,6 @@ const ClubRegister = () => {
 
   const [form, setForm] = useState({
     clubName: "",
-    clubEmail: "",
-    clubPhone: "",
     isPrivateClub: false, // renamed from is_public
     clubLogo: null,
     clubDescription: "",
@@ -29,8 +27,6 @@ const ClubRegister = () => {
     captainLastName: "",
     captainEmail: "",
     captainContactNo: "",
-    password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -104,7 +100,7 @@ const ClubRegister = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
           <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
             <h2 className="text-2xl font-bold text-dark-gold mb-4">
-              Registration sent successfully for Admin approval
+              Registration sent successfully
             </h2>
             <p className="text-gray-700">Redirecting to dashboard...</p>
           </div>
@@ -125,24 +121,6 @@ const ClubRegister = () => {
                   placeholder="Club Name"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
                   value={form.clubName}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="email"
-                  name="clubEmail"
-                  placeholder="Club Email"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.clubEmail}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="tel"
-                  name="clubPhone"
-                  placeholder="Club Phone Number"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.clubPhone}
                   onChange={handleChange}
                   required
                 />
@@ -267,6 +245,7 @@ const ClubRegister = () => {
           </div>
         </div>
       )}
+
       {showPopup && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">

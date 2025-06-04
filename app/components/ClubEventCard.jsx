@@ -36,8 +36,7 @@ const ClubEventCard = ({ event }) => {
         <div className="mt-4 space-y-2">
           <p className="text-gray-600">
             <span className="font-semibold">When:</span>{" "}
-            {new Date(event.start_date).toLocaleDateString()} -{" "}
-            {new Date(event.end_date).toLocaleDateString()}
+            {new Date(event.start_date).toLocaleDateString()}
           </p>
           <p className="text-gray-600">
             <span className="font-semibold">Where:</span>{" "}

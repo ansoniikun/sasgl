@@ -64,9 +64,9 @@ const DashboardPage = () => {
             </p>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-2">Best Position</h2>
+            <h2 className="text-xl font-semibold mb-2">Best Score</h2>
             <p className="text-2xl font-bold text-dark-gold">
-              {stats.best_position ?? "N/A"}
+              {stats.best_score ?? "N/A"}
             </p>
           </div>
         </div>

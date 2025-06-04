@@ -1,0 +1,170 @@
+"use client";
+import { useState } from "react";
+import { API_BASE_URL } from "../lib/config";
+
+const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
+  const [name, setName] = useState("");
+  const [type, setType] = useState("league");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [handicap, setHandicap] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const getToken = () => localStorage.getItem("token");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const token = getToken();
+
+      const body = {
+        name,
+        type,
+        start_date: startDate,
+        handicap,
+        description,
+      };
+
+      // Only include end_date and location if not a league
+      if (type !== "league") {
+        body.end_date = endDate;
+        body.location = location;
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/clubs/${clubId}/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        const newEvent = await res.json();
+        onEventCreated(newEvent);
+        onClose(); // close the modal after creation
+      } else {
+        const errMsg = await res.text();
+        console.error("Failed to create event", errMsg);
+      }
+    } catch (err) {
+      console.error("Error creating event:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg">
+        <h2 className="text-xl font-bold mb-4">Create New Club Event</h2>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            type="text"
+            placeholder="Event Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="w-full p-2 border rounded"
+          />
+
+          <textarea
+            placeholder="Event Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="w-full p-2 border rounded"
+          />
+
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full p-2 border rounded"
+          >
+            <option value="league">League</option>
+            <option value="tournament">Tournament</option>
+            <option value="annual">Annual</option>
+          </select>
+
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+            className="w-full p-2 border rounded"
+          />
+
+          {type !== "league" && (
+            <>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+                className="w-full p-2 border rounded"
+              />
+
+              <input
+                type="text"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+                className="w-full p-2 border rounded"
+              />
+            </>
+          )}
+
+          <div className="flex gap-4 items-center">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="handicap"
+                value="true"
+                checked={handicap === true}
+                onChange={() => setHandicap(true)}
+                className="mr-1"
+              />
+              Handicap
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="handicap"
+                value="false"
+                checked={handicap === false}
+                onChange={() => setHandicap(false)}
+                className="mr-1"
+              />
+              No Handicap
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 text-black rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-dark-green text-white rounded disabled:opacity-50"
+            >
+              {loading ? "Creating..." : "Create Event"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateClubEventModal;
