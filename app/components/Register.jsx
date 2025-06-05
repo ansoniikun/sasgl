@@ -11,6 +11,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [registered, setRegistered] = useState(false);
   const router = useRouter();
 
@@ -20,17 +21,19 @@ const Register = () => {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone_number: phoneNumber,
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Registration failed");
 
-      // Set registration success state
       setRegistered(true);
-
-      // Redirect after 2 seconds
       setTimeout(() => {
         router.push("/login");
       }, 2000);
@@ -57,7 +60,7 @@ const Register = () => {
       {/* Left Image */}
       <div className="w-5/6 hidden lg:block relative">
         <Image
-          src="/register.png" // Or /signup.png if you have a separate one
+          src="/register.png"
           alt="Golf Carts"
           fill
           className="object-cover"
@@ -114,6 +117,16 @@ const Register = () => {
               required
             />
 
+            <p className="text-gray-500 mb-0">Phone Number</p>
+            <input
+              type="tel"
+              placeholder="+27 71 234 5678"
+              className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              required
+            />
+
             <p className="text-gray-500 mb-0">Password</p>
             <input
               type="password"
@@ -131,10 +144,6 @@ const Register = () => {
               Sign up
             </button>
           </form>
-
-          {/* {errorMessage && (
-            <p className="text-sm text-center text-red-500">{errorMessage}</p>
-          )} */}
 
           <p className="text-center text-sm text-gray-400">
             Already have an account?{" "}

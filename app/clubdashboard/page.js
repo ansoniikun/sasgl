@@ -302,9 +302,7 @@ const ClubDashboard = () => {
                       return `${day}/${month}/${year}`;
                     })()}
                   </td>
-                  <td className="p-3">{`0${Math.floor(
-                    100000000 + Math.random() * 900000000
-                  )}`}</td>
+                  <td className="p-3">{member.phone_number}</td>
                   <td className="p-3 text-ash-grey capitalize">
                     {member.status === "pending" &&
                     (currentUserRole === "captain" ||

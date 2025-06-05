@@ -79,12 +79,6 @@ const Hero = () => {
           {/* CTA Buttons */}
           <div className="mt-6 flex gap-4 flex-wrap justify-center">
             <Link
-              href="/login"
-              className="bg-dark-gold hover:bg-dark-gold/90 text-white font-semibold px-6 py-2 rounded transition-all duration-200"
-            >
-              Login
-            </Link>
-            <Link
               href="#contact"
               className="bg-black hover:bg-black/90 font-semibold px-6 py-2 rounded text-white transition-all duration-200"
             >

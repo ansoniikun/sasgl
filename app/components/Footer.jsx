@@ -100,10 +100,7 @@ const Footer = () => {
 
         {/* Copyright Section */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>
-            © Copyright 2025 Social Golf League, designed and built by Hlompho
-            Maleke
-          </p>
+          <p>© Copyright 2025 Social Golf League</p>
         </div>
       </div>
     </footer>
