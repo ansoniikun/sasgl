@@ -10,6 +10,7 @@ const images = ["/hero1.jpg", "/hero2.jpg", "/hero4.jpg"];
 const Hero = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState("top");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideInterval = useRef(null);
 
   const clearSlideInterval = () => {
@@ -46,6 +47,12 @@ const Hero = () => {
     return clearSlideInterval;
   }, []);
 
+  useEffect(() => {
+    // Check login status based on token
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <Navbar />
@@ -78,6 +85,14 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="mt-6 flex gap-4 flex-wrap justify-center">
+            {!isLoggedIn && (
+              <Link
+                href="/register"
+                className="bg-dark-gold hover:bg-dark-gold/90 text-white font-semibold px-6 py-2 rounded transition-all duration-200"
+              >
+                Register
+              </Link>
+            )}
             <Link
               href="#contact"
               className="bg-black hover:bg-black/90 font-semibold px-6 py-2 rounded text-white transition-all duration-200"

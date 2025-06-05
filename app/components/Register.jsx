@@ -100,7 +100,7 @@ const Register = () => {
             <p className="text-gray-500 mb-0">Full Name</p>
             <input
               type="text"
-              placeholder="Ash Maleke"
+              placeholder="John Doe"
               className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
               value={name}
               onChange={(e) => setName(e.target.value)}
