@@ -5,9 +5,11 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { logout } from "../utils/logout";
+import { useRouter } from "next/navigation";
 
 const DashboardNav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const handleLogout = () => {
     logout(); // remove token and redirect

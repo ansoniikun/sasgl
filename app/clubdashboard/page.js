@@ -237,10 +237,17 @@ const ClubDashboard = () => {
               "Club Events",
               "Billing",
               "Subscriptions",
+              "My Dashboard",
             ].map((tab) => (
               <li
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  if (tab === "My Dashboard") {
+                    router.push("/dashboard");
+                  } else {
+                    setActiveTab(tab);
+                  }
+                }}
                 className={`py-3 px-5 cursor-pointer border-2 ${
                   activeTab === tab
                     ? "text-white font-semibold border-dark-green bg-dark-green"
