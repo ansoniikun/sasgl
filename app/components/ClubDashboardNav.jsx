@@ -7,7 +7,7 @@ import Link from "next/link";
 import { logout } from "../utils/logout";
 import { useRouter } from "next/navigation";
 
-const DashboardNav = ({ role }) => {
+const ClubDashboardNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
@@ -17,11 +17,8 @@ const DashboardNav = ({ role }) => {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Join Club", href: "/joinclub" },
-    ...(role === "captain" || role === "chairman"
-      ? [{ name: "Create Club", href: "/createclub" }]
-      : []),
-    { name: "Club Dashboard", href: "/clubdashboard" },
+    { name: "My Dashboard", href: "/dashboard" },
+    { name: "Active Leagues", href: "/leagues" },
   ];
 
   return (
@@ -92,4 +89,4 @@ const DashboardNav = ({ role }) => {
   );
 };
 
-export default DashboardNav;
+export default ClubDashboardNav;

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ClubEventCard from "../components/ClubEventCard";
-import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
 import Image from "next/image";
 import ClubCapture from "../components/ClubCapture";
 import CreateClubEventForm from "../components/CreateClubEvents";
+import ClubDashboardNav from "../components/ClubDashboardNav";
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -216,6 +216,7 @@ const ClubDashboard = () => {
 
   return (
     <div className="">
+      <ClubDashboardNav />
       {/* Background Banner */}
       <div
         className="relative h-[40vh] bg-cover bg-center flex items-center justify-center"
@@ -235,22 +236,12 @@ const ClubDashboard = () => {
               "Capture Scores",
               "Active League",
               "Club Events",
-              // "Billing",
+              "Billing",
               "Subscriptions",
-              "My Dashboard",
-              "Home",
             ].map((tab) => (
               <li
                 key={tab}
-                onClick={() => {
-                  if (tab === "My Dashboard") {
-                    router.push("/dashboard");
-                  } else if (tab === "Home") {
-                    router.push("/");
-                  } else {
-                    setActiveTab(tab);
-                  }
-                }}
+                onClick={() => setActiveTab(tab)}
                 className={`py-3 px-5 cursor-pointer border-2 ${
                   activeTab === tab
                     ? "text-white font-semibold border-dark-green bg-dark-green"

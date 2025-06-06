@@ -93,12 +93,6 @@ const Hero = () => {
                 Register
               </Link>
             )}
-            <Link
-              href="#contact"
-              className="bg-black hover:bg-black/90 font-semibold px-6 py-2 rounded text-white transition-all duration-200"
-            >
-              Contact Us
-            </Link>
           </div>
         </div>
 

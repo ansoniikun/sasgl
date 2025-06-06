@@ -47,7 +47,8 @@ const DashboardPage = () => {
   return (
     <div className="bg-gray-100">
       <div className="max-w-7xl min-h-screen p-6 mx-auto">
-        <DashboardNav />
+        <DashboardNav role={stats.role} />
+
         <h1 className="text-3xl font-bold mb-6 pt-36">Welcome, {stats.name}</h1>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -66,7 +67,7 @@ const DashboardPage = () => {
           <div className="bg-white p-4 rounded shadow">
             <h2 className="text-xl font-semibold mb-2">Best Score</h2>
             <p className="text-2xl font-bold text-dark-gold">
-              {stats.best_score ?? "N/A"}
+              {stats.best_score ?? 0}
             </p>
           </div>
         </div>

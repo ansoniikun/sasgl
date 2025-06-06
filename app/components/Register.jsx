@@ -12,6 +12,8 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("");
+
   const [registered, setRegistered] = useState(false);
   const router = useRouter();
 
@@ -26,6 +28,7 @@ const Register = () => {
           email,
           password,
           phone_number: phoneNumber,
+          role,
         }),
       });
 
@@ -126,6 +129,21 @@ const Register = () => {
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
             />
+            <p className="text-gray-500 mb-0">Select Role</p>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green text-gray-600 "
+            >
+              <option value="" disabled className="text-gray-300">
+                Select your role
+              </option>
+              <option value="player">Player</option>
+              <option value="captain">Club Captain</option>
+              <option value="chairman">Club Chairman</option>
+              <option value="admin">Admin</option>
+            </select>
 
             <p className="text-gray-500 mb-0">Password</p>
             <input
