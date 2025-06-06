@@ -8,8 +8,8 @@ const Contact = () => {
     firstName: "",
     lastName: "",
     email: "",
-    date: "",
-    type: "",
+    phone: "",
+    description: "",
   });
 
   const handleChange = (e) => {
@@ -17,8 +17,8 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="relative  w-full">
-      {/* Background Image using Next.js Image component */}
+    <section id="contact" className="relative w-full">
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/hero3.jpg"
@@ -37,8 +37,8 @@ const Contact = () => {
         {/* Heading */}
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl ">
-            <span className="text-white">Join Our </span>
-            <span className="text-dark-gold">Network</span>
+            <span className="text-white">Contact </span>
+            <span className="text-dark-gold">Us</span>
           </h2>
           <div className="w-6 h-1 bg-dark-gold mx-auto mt-3" />
         </div>
@@ -52,7 +52,7 @@ const Contact = () => {
               placeholder="First Name"
               value={formData.firstName}
               onChange={handleChange}
-              className="p-3 rounded bg-white/80 text-black w-full focus:outline-dark-gold"
+              className="p-3 rounded bg-white/80 text-black outline-1 outline-gray-200 w-full focus:outline-dark-gold"
               required
             />
             <input
@@ -61,7 +61,7 @@ const Contact = () => {
               placeholder="Last Name"
               value={formData.lastName}
               onChange={handleChange}
-              className="p-3 rounded bg-white/80 text-black w-full focus:outline-dark-gold"
+              className="p-3 rounded bg-white/80 text-black outline-1 outline-gray-200 w-full focus:outline-dark-gold"
               required
             />
             <input
@@ -70,39 +70,33 @@ const Contact = () => {
               placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
-              className="p-3 rounded bg-white/80 text-black w-full focus:outline-dark-gold"
+              className="p-3 rounded bg-white/80 text-black outline-1 outline-gray-200 w-full focus:outline-dark-gold"
               required
             />
-            <select
-              name="date"
-              value={formData.date}
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
               onChange={handleChange}
-              className="p-3 rounded bg-white/80 text-black w-full"
-              required
-            >
-              <option value="">Select Date</option>
-              <option value="2025-06-01">1 June 2025</option>
-              <option value="2025-07-01">1 July 2025</option>
-              <option value="2025-08-01">1 August 2025</option>
-            </select>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="p-3 rounded bg-white/80 text-black w-full"
-              required
-            >
-              <option value="">Join As</option>
-              <option value="individual">Individual</option>
-              <option value="club">Club</option>
-            </select>
+              className="p-3 rounded bg-white/80 text-black outline-1 outline-gray-200 w-full focus:outline-dark-gold"
+            />
           </div>
+
+          <textarea
+            name="description"
+            placeholder="Your Message..."
+            value={formData.description}
+            onChange={handleChange}
+            rows={4}
+            className="w-full p-3 rounded bg-white/80 text-black outline-1 outline-gray-200 focus:outline-dark-gold"
+          />
 
           <button
             type="submit"
             className="bg-dark-gold text-white font-semibold px-6 py-3 rounded hover:bg-yellow-700 transition"
           >
-            Join Now
+            Submit
           </button>
         </form>
       </div>

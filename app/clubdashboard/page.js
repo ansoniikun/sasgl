@@ -235,15 +235,18 @@ const ClubDashboard = () => {
               "Capture Scores",
               "Active League",
               "Club Events",
-              "Billing",
+              // "Billing",
               "Subscriptions",
               "My Dashboard",
+              "Home",
             ].map((tab) => (
               <li
                 key={tab}
                 onClick={() => {
                   if (tab === "My Dashboard") {
                     router.push("/dashboard");
+                  } else if (tab === "Home") {
+                    router.push("/");
                   } else {
                     setActiveTab(tab);
                   }
