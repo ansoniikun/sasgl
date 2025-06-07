@@ -8,35 +8,51 @@ import { API_BASE_URL } from "../lib/config";
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
+  const [role, setRole] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       const token = localStorage.getItem("token");
       if (!token) return router.push("/login");
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
+        // Fetch stats
+        const statsRes = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          console.error("Error fetching stats:", data);
+        const statsData = await statsRes.json();
+        if (!statsRes.ok) {
+          console.error("Error fetching stats:", statsData);
         } else {
-          setStats(data);
+          setStats(statsData);
+        }
+
+        // Fetch user role
+        const roleRes = await fetch(`${API_BASE_URL}/api/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const roleData = await roleRes.json();
+        if (!roleRes.ok) {
+          console.error("Error fetching user role:", roleData);
+        } else {
+          setRole(roleData.role);
         }
       } catch (err) {
         console.error("Network error:", err);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, [router]);
 
-  if (!stats)
+  if (!stats || !role)
     return (
       <div className="text-center mt-10">
         <DashboardNav />
@@ -44,12 +60,22 @@ const DashboardPage = () => {
       </div>
     );
 
+  const canCreateClub = ["chairman", "captain"].includes(role);
+
   return (
     <div className="bg-gray-100">
       <div className="max-w-7xl min-h-screen p-6 mx-auto">
-        <DashboardNav role={stats.role} />
+        <DashboardNav role={role} />
 
-        <h1 className="text-3xl font-bold mb-6 pt-36">Welcome, {stats.name}</h1>
+        <div className="flex justify-between items-center pt-36 mb-6">
+          <h1 className="text-3xl font-bold">Welcome, {stats.name}</h1>
+          <Link
+            href="/edit-profile"
+            className="bg-dark-green text-white font-semibold py-2 px-4 rounded shadow transition"
+          >
+            Edit Profile
+          </Link>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-4 rounded shadow">
@@ -79,12 +105,15 @@ const DashboardPage = () => {
           >
             Join a Club
           </Link>
-          <Link
-            href="/createclub"
-            className="bg-dark-gold text-black font-bold py-2 px-6 rounded shadow hover:bg-yellow-600 transition text-center"
-          >
-            Create a Club
-          </Link>
+
+          {canCreateClub && (
+            <Link
+              href="/createclub"
+              className="bg-dark-gold text-black font-bold py-2 px-6 rounded shadow hover:bg-yellow-600 transition text-center"
+            >
+              Create a Club
+            </Link>
+          )}
         </div>
       </div>
     </div>

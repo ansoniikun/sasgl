@@ -233,8 +233,11 @@ const ClubDashboard = () => {
           <ul className="flex text-sm sm:text-base text-ash-gray">
             {[
               "Club Members",
-              "Capture Scores",
-              "Active League",
+              ...(currentUserRole === "chairman" ||
+              currentUserRole === "captain"
+                ? ["Capture Scores"]
+                : []),
+              "Leaderboard",
               "Club Events",
               "Billing",
               "Subscriptions",
