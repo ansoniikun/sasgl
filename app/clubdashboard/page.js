@@ -445,7 +445,10 @@ const ClubDashboard = () => {
 
         <div className="mt-4 flex flex-col gap-3">
           {["chairman", "captain"].includes(currentUserRole) && (
-            <button className="w-full bg-dark-green text-white font-medium py-2 rounded-lg">
+            <button
+              className="w-full bg-dark-green text-white font-medium py-2 rounded-lg"
+              onClick={() => router.push("/edit-club")}
+            >
               Edit Club
             </button>
           )}
