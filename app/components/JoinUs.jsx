@@ -19,8 +19,7 @@ const JoinUs = () => {
         </h2>
         <div className="w-5 h-1 bg-dark-gold mt-3 mb-4" />
         <p className="text-lg md:text-xl max-w-2xl">
-          Browse our list of local clubs grouped by provinces and request to
-          join.
+          Browse our list of local clubs and request to join.
         </p>
         <Link
           href="/register"
