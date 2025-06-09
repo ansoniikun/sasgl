@@ -8,6 +8,8 @@ import Image from "next/image";
 import ClubCapture from "../components/ClubCapture";
 import CreateClubEventForm from "../components/CreateClubEvents";
 import ClubDashboardNav from "../components/ClubDashboardNav";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../lib/firebase";
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -21,6 +23,8 @@ const ClubDashboard = () => {
   const [activeTab, setActiveTab] = useState("Club Members");
   const [leagueData, setLeagueData] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [profilePicUrls, setProfilePicUrls] = useState({});
 
   const router = useRouter();
 
@@ -67,8 +71,10 @@ const ClubDashboard = () => {
           }
         );
 
+        let membersData = []; // define here
+
         if (membersRes.ok) {
-          const membersData = await membersRes.json();
+          membersData = await membersRes.json();
           setMembers(membersData);
         }
 
@@ -101,6 +107,40 @@ const ClubDashboard = () => {
           setClubEvents(eventsData);
         } else {
           console.error("Failed to fetch events for club.");
+        }
+
+        if (club.logo_url) {
+          const logoRef = ref(storage, `club_logos/${club.logo_url}`);
+          try {
+            const url = await getDownloadURL(logoRef);
+            setLogoUrl(url);
+          } catch (err) {
+            console.error("Failed to load club logo:", err);
+          }
+        }
+
+        if (membersData.length > 0) {
+          const urls = {};
+          await Promise.all(
+            membersData.map(async (member) => {
+              if (member.profile_picture) {
+                const picRef = ref(
+                  storage,
+                  `profile_pictures/${member.profile_picture}`
+                );
+                try {
+                  const url = await getDownloadURL(picRef);
+                  urls[member.id] = url;
+                } catch (err) {
+                  console.error(
+                    `Failed to fetch profile picture for ${member.name}`,
+                    err
+                  );
+                }
+              }
+            })
+          );
+          setProfilePicUrls(urls);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -282,13 +322,23 @@ const ClubDashboard = () => {
                   <td className="pl-5">{index + 1}</td>
                   <td className="p-3">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
-                      {/* <Image
-                        src="/golfer.jpg"
-                        alt="Club Logo"
-                        width={38}
-                        height={38}
-                        className="object-cover w-full h-full"
-                      /> */}
+                      {profilePicUrls[member.id] ? (
+                        <Image
+                          src={profilePicUrls[member.id]}
+                          alt={`${member.name} profile`}
+                          width={32}
+                          height={32}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <Image
+                          src="/default-profile.png" // fallback image
+                          alt="Default profile"
+                          width={32}
+                          height={32}
+                          className="object-cover w-full h-full"
+                        />
+                      )}
                     </div>
                   </td>
                   <td className="p-2 capitalize">{member.role}</td>
@@ -421,26 +471,22 @@ const ClubDashboard = () => {
       {/* Club info card */}
       <div className="absolute left-[29%] lg:top-[20vh] lg:left-[3vw]  w-[40%] lg:w-[20%] z-20">
         <div className="bg-white rounded-xl shadow-2xl p-6 pt-10 text-center lg:text-left flex flex-col items-center h-[65vh]">
-          <Image
-            src={clubData.logo_url || "/placeholder.png"}
-            alt="Club Logo"
-            width={200}
-            height={180}
-            className="rounded-full mb-4 object-contain"
-          />
-          <h2 className="text-3xl font-semibold text-ash-gray mb-2">
+          <div className="w-48 h-48 rounded-full overflow-hidden">
+            <Image
+              src={logoUrl || "/placeholder.png"}
+              alt="Club Logo"
+              width={192}
+              height={192}
+              className="object-cover w-full h-full block"
+            />
+          </div>
+          <h2 className="text-3xl font-semibold text-ash-gray my-2 ">
             {clubData.name}
           </h2>
           <p className="text-sm text-gray-500 max-w-[90%]">
             {clubData.description}
           </p>
-          <br></br>
-          {/* <p className="hidden  text-gray-500 max-w-[90%]">
-            With a commitment to quality and community, Golf Doza Za provides
-            excellent facilities, including a full-length driving range, putting
-            greens, a pro shop, and a comfortable clubhouse for post-game
-            socialising.
-          </p> */}
+          <br />
         </div>
 
         <div className="mt-4 flex flex-col gap-3">

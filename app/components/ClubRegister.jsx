@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "../lib/config";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../lib/firebase";
 
 const ClubRegister = () => {
   const [token, setToken] = useState(null);
@@ -43,33 +45,46 @@ const ClubRegister = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("clubName", form.clubName);
-    formData.append("clubEmail", form.clubEmail);
-    formData.append("clubPhone", form.clubPhone);
-    formData.append("isPrivateClub", form.isPrivateClub);
-    if (form.clubLogo) formData.append("clubLogo", form.clubLogo);
-    formData.append("clubDescription", form.clubDescription);
-    formData.append("captainFirstName", form.captainFirstName);
-    formData.append("captainLastName", form.captainLastName);
-    formData.append("captainEmail", form.captainEmail);
-    formData.append("captainContactNo", form.captainContactNo);
+    let logoUrl = "";
 
     try {
+      if (form.clubLogo) {
+        const logoFileName = `${Date.now()}_${form.clubLogo.name}`;
+        const logoRef = ref(storage, `club_logos/${logoFileName}`);
+        await uploadBytes(logoRef, form.clubLogo);
+        logoUrl = logoFileName; // <- store only the name instead of the full URL
+      }
+
+      const clubData = {
+        clubName: form.clubName,
+        clubEmail: form.clubEmail,
+        clubPhone: form.clubPhone,
+        isPrivateClub: form.isPrivateClub,
+        clubLogoUrl: logoUrl,
+        clubDescription: form.clubDescription,
+        captainFirstName: form.captainFirstName,
+        captainLastName: form.captainLastName,
+        captainEmail: form.captainEmail,
+        captainContactNo: form.captainContactNo,
+      };
+
       const res = await fetch(`${API_BASE_URL}/api/clubs/register`, {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: JSON.stringify(clubData),
       });
 
       const result = await res.json();
+
       if (res.ok) {
         setSuccessful(true);
       } else {
@@ -212,28 +227,6 @@ const ClubRegister = () => {
                   required
                 />
               </div>
-
-              {/* Password
-              <div className="mb-4">
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-              </div> */}
 
               <button
                 type="submit"

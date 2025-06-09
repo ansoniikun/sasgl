@@ -35,6 +35,7 @@ const Login = () => {
       }
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("loginTime", Date.now().toString());
       router.push("/dashboard");
     } catch (err) {
       setErrorMessage("An unexpected error occurred. Please try again.");
@@ -58,7 +59,7 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-8">
         <div className="w-full max-w-md space-y-6">
           {/* Logo */}
-          <div className="flex ">
+          <div className="flex " onClick={() => router.push("/")}>
             <Image src="/logo.jpg" alt="Logo" width={60} height={60} />
           </div>
 

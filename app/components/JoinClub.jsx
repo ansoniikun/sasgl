@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../lib/config";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../lib/firebase";
 
 const JoinClub = () => {
   const [clubs, setClubs] = useState([]);
@@ -12,7 +14,24 @@ const JoinClub = () => {
     const fetchClubs = async () => {
       const res = await fetch(`${API_BASE_URL}/api/clubs/all`);
       const data = await res.json();
-      setClubs(data);
+
+      const clubsWithLogos = await Promise.all(
+        data.map(async (club) => {
+          if (club.logo_url) {
+            try {
+              const logoRef = ref(storage, `club_logos/${club.logo_url}`);
+              const logoUrl = await getDownloadURL(logoRef);
+              return { ...club, logo_url: logoUrl };
+            } catch (err) {
+              console.error(`Error fetching logo for ${club.name}:`, err);
+              return { ...club, logo_url: null };
+            }
+          }
+          return club;
+        })
+      );
+
+      setClubs(clubsWithLogos);
     };
 
     const fetchUserStatuses = async () => {
@@ -95,7 +114,7 @@ const JoinClub = () => {
                     <img
                       src={club.logo_url}
                       alt={`${club.name} logo`}
-                      className="w-16 h-16 object-cover rounded-md border"
+                      className="w-16 h-16 object-cover rounded-4xl"
                     />
                   )}
                   <div>

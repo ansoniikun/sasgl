@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
+import { getDownloadURL, ref } from "firebase/storage"; // ✅
+import { storage } from "../lib/firebase"; // ✅
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [role, setRole] = useState(null);
+  const [profilePicUrl, setProfilePicUrl] = useState(null); // ✅
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +34,7 @@ const DashboardPage = () => {
           setStats(statsData);
         }
 
-        // Fetch user role
+        // Fetch user role & profile_picture
         const roleRes = await fetch(`${API_BASE_URL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,9 +43,19 @@ const DashboardPage = () => {
 
         const roleData = await roleRes.json();
         if (!roleRes.ok) {
-          console.error("Error fetching user role:", roleData);
+          console.error("Error fetching user data:", roleData);
         } else {
           setRole(roleData.role);
+
+          // ✅ Fetch profile picture from Firebase using filename
+          if (roleData.profile_picture) {
+            const storageRef = ref(
+              storage,
+              `profile_pictures/${roleData.profile_picture}`
+            );
+            const url = await getDownloadURL(storageRef);
+            setProfilePicUrl(url);
+          }
         }
       } catch (err) {
         console.error("Network error:", err);
@@ -67,8 +80,20 @@ const DashboardPage = () => {
       <div className="max-w-7xl min-h-screen p-6 mx-auto">
         <DashboardNav role={role} />
 
-        <div className="flex justify-between items-center pt-36 mb-6">
+        {/* Profile Section */}
+        <div className="pt-36 mb-6 flex flex-col items-center text-center">
+          {profilePicUrl && (
+            <img
+              src={profilePicUrl}
+              alt="Profile"
+              className="w-50 h-50 rounded-full object-cover border-4 border-gray-300 mb-4 shadow"
+            />
+          )}
           <h1 className="text-3xl font-bold">Welcome, {stats.name}</h1>
+        </div>
+
+        {/* Edit Button */}
+        <div className="flex justify-end mb-4">
           <Link
             href="/edit-profile"
             className="bg-dark-green text-white font-semibold py-2 px-4 rounded shadow transition"
@@ -77,6 +102,7 @@ const DashboardPage = () => {
           </Link>
         </div>
 
+        {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-4 rounded shadow">
             <h2 className="text-xl font-semibold mb-2">Total Points</h2>
@@ -98,6 +124,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
+        {/* Club Buttons */}
         <div className="flex flex-col md:flex-row gap-4">
           <Link
             href="/joinclub"

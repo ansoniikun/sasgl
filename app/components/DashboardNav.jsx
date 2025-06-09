@@ -17,8 +17,8 @@ const DashboardNav = ({ role }) => {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Leaderboard", href: "/leagues" },
     { name: "Join Club", href: "/joinclub" },
+    { name: "Leaderboard", href: "/leagues" },
     ...(role === "captain" || role === "chairman"
       ? [{ name: "Create Club", href: "/createclub" }]
       : []),

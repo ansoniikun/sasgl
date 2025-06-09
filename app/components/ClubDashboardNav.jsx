@@ -17,8 +17,8 @@ const ClubDashboardNav = () => {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "My Dashboard", href: "/dashboard" },
     { name: "Active Leagues", href: "/leagues" },
+    { name: "My Dashboard", href: "/dashboard" },
   ];
 
   return (

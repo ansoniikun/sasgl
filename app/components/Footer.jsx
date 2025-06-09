@@ -38,18 +38,12 @@ const Footer = () => {
             <h3 className="text-dark-gold text-xl mb-4">Events</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/tournaments"
-                  className="hover:text-dark-gold transition"
-                >
+                <a href="#" className="hover:text-dark-gold transition">
                   &gt; Annual Events
                 </a>
               </li>
               <li>
-                <a
-                  href="/tournaments"
-                  className="hover:text-dark-gold transition"
-                >
+                <a href="#" className="hover:text-dark-gold transition">
                   &gt; Tournaments
                 </a>
               </li>
@@ -100,7 +94,7 @@ const Footer = () => {
 
         {/* Copyright Section */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>© Copyright 2025 Social Golf League</p>
+          <p>© 2025 Social Golf League</p>
         </div>
       </div>
     </footer>
