@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
 import { getDownloadURL, ref } from "firebase/storage"; // ✅
-import { storage } from "../lib/firebase"; // ✅
+import { storage } from "../lib/firebase";
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
@@ -47,14 +48,19 @@ const DashboardPage = () => {
         } else {
           setRole(roleData.role);
 
-          // ✅ Fetch profile picture from Firebase using filename
           if (roleData.profile_picture) {
-            const storageRef = ref(
-              storage,
-              `profile_pictures/${roleData.profile_picture}`
-            );
-            const url = await getDownloadURL(storageRef);
-            setProfilePicUrl(url);
+            // If the profile_picture is a full URL (e.g., from Google)
+            if (roleData.profile_picture.startsWith("http")) {
+              setProfilePicUrl(roleData.profile_picture);
+            } else {
+              // Otherwise, assume a Firebase Storage filename
+              const storageRef = ref(
+                storage,
+                `profile_pictures/${roleData.profile_picture}`
+              );
+              const url = await getDownloadURL(storageRef);
+              setProfilePicUrl(url);
+            }
           }
         }
       } catch (err) {
@@ -83,11 +89,15 @@ const DashboardPage = () => {
         {/* Profile Section */}
         <div className="pt-36 mb-6 flex flex-col items-center text-center">
           {profilePicUrl && (
-            <img
-              src={profilePicUrl}
-              alt="Profile"
-              className="w-50 h-50 rounded-full object-cover border-4 border-gray-300 mb-4 shadow"
-            />
+            <div className="w-48 h-48 relative rounded-full overflow-hidden border-4 border-gray-300 mb-4 shadow">
+              <Image
+                src={profilePicUrl}
+                alt="Profile"
+                fill
+                style={{ objectFit: "cover" }}
+                priority
+              />
+            </div>
           )}
           <h1 className="text-3xl font-bold">Welcome, {stats.name}</h1>
         </div>

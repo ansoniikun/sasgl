@@ -235,7 +235,11 @@ const ClubDashboard = () => {
           No club association found
         </h2>
         <p className="text-gray-700 mb-6 text-sm sm:text-base">
-          Would you like to go back to your dashboard or register a new club?
+          Would you like to go back to your dashboard or{" "}
+          {currentUserRole !== "chairman" && currentUserRole !== "captain"
+            ? "join a club"
+            : "register a new club"}
+          ?
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button
@@ -244,12 +248,21 @@ const ClubDashboard = () => {
           >
             Go to Dashboard
           </button>
-          <button
-            onClick={() => router.push("/createclub")}
-            className="px-4 py-2 bg-dark-gold text-white rounded"
-          >
-            Register New Club
-          </button>
+          {currentUserRole !== "chairman" && currentUserRole !== "captain" ? (
+            <button
+              onClick={() => router.push("/joinclub")}
+              className="px-4 py-2 bg-dark-gold text-white rounded"
+            >
+              Join Club
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push("/createclub")}
+              className="px-4 py-2 bg-dark-gold text-white rounded"
+            >
+              Register New Club
+            </button>
+          )}
         </div>
       </div>
     );

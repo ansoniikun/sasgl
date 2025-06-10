@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../lib/config";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../lib/firebase";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -13,6 +15,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
+  const [googleUser, setGoogleUser] = useState(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
   const [registered, setRegistered] = useState(false);
   const router = useRouter();
@@ -42,6 +46,41 @@ const Register = () => {
       }, 2000);
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      setGoogleUser({
+        name: user.displayName,
+        email: user.email,
+        profile_picture: user.photoURL,
+      });
+      setShowRoleModal(true); // Show role selector modal
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleGoogleRoleSubmit = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/google-register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...googleUser,
+          role,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Google sign-in failed");
+
+      router.push("/dashboard");
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -87,7 +126,10 @@ const Register = () => {
           </p>
 
           {/* Google Sign Up */}
-          <button className="w-full flex text-gray-500 font-semibold text-sm items-center justify-center border border-gray-300 rounded-md py-2 gap-2 hover:bg-gray-50 cursor-pointer">
+          <button
+            onClick={handleGoogleSignIn}
+            className="w-full flex text-gray-500 font-semibold text-sm items-center justify-center border border-gray-300 rounded-md py-2 gap-2 hover:bg-gray-50 cursor-pointer"
+          >
             <FcGoogle size={20} />
             <span>Continue with Google</span>
           </button>
@@ -171,6 +213,37 @@ const Register = () => {
           </p>
         </div>
       </div>
+
+      {showRoleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm space-y-4">
+            <h2 className="text-xl font-semibold text-center">
+              Choose Your Role
+            </h2>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+            >
+              <option value="" disabled>
+                Select your role
+              </option>
+              <option value="player">Player</option>
+              <option value="captain">Club Captain</option>
+              <option value="chairman">Club Chairman</option>
+              <option value="admin">Admin</option>
+            </select>
+
+            <button
+              onClick={handleGoogleRoleSubmit}
+              disabled={!role}
+              className="w-full bg-dark-green text-white py-2 rounded-md hover:opacity-90 transition"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../lib/config";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../lib/firebase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -42,6 +44,31 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: user.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Google login failed");
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("loginTime", Date.now().toString());
+      router.push("/dashboard");
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen flex">
       {/* Left Image */}
@@ -71,7 +98,10 @@ const Login = () => {
           </p>
 
           {/* Google Sign In */}
-          <button className="w-full flex text-gray-500 font-semibold text-sm items-center justify-center border border-gray-300  rounded-md py-2 gap-2 hover:bg-gray-50 cursor-pointer">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full flex text-gray-500 font-semibold text-sm items-center justify-center border border-gray-300  rounded-md py-2 gap-2 hover:bg-gray-50 cursor-pointer"
+          >
             <FcGoogle size={20} className="mr-2" />
             <span>Continue with Google</span>
           </button>
