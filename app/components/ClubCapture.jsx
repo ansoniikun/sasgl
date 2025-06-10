@@ -74,13 +74,11 @@ const ClubCapture = () => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-
-    const playerScore = Number(formData.get("playerScore"));
     const points = Number(formData.get("points") || 0);
     const birdies = Number(formData.get("birdies") || 0);
     const strokes = Number(formData.get("strokes") || 0);
 
-    if (!selectedEventId || !selectedPlayerId || isNaN(playerScore)) {
+    if (!selectedEventId || !selectedPlayerId) {
       alert("Please fill in all required fields.");
       return;
     }
@@ -101,7 +99,6 @@ const ClubCapture = () => {
         body: JSON.stringify({
           eventId: selectedEventId,
           userId: selectedPlayerId,
-          playerScore,
           points,
           birdies,
           strokes,
@@ -116,10 +113,11 @@ const ClubCapture = () => {
         throw new Error(data.error || "Failed to submit stats.");
       }
 
-      alert("Stats submitted successfully!");
+      alert("Scores submitted successfully!");
       e.target.reset();
       setSelectedEventId("");
       setSelectedPlayerId("");
+      window.location.reload();
     } catch (err) {
       console.error("Submission failed:", err);
       alert("Failed to submit stats.");
@@ -177,20 +175,6 @@ const ClubCapture = () => {
           </select>
         </div>
 
-        {/* Player Score */}
-        <div className="flex flex-col">
-          <label htmlFor="playerScore" className="font-medium text-gray-700">
-            Player Score<span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="playerScore"
-            placeholder="0"
-            required
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
-          />
-        </div>
-
         {/* Points */}
         <div className="flex flex-col">
           <label htmlFor="points" className="font-medium text-gray-700">
@@ -243,7 +227,7 @@ const ClubCapture = () => {
             type="submit"
             className="bg-dark-green text-white font-semibold px-6 py-2 rounded-md"
           >
-            Submit Stats
+            Submit Scores
           </button>
         </div>
       </form>

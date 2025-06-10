@@ -1,5 +1,8 @@
 "use client";
 import React from "react";
+import { useState } from "react";
+import { Pencil } from "lucide-react";
+import EditEventModal from "./EventEditModal";
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
@@ -14,7 +17,27 @@ const getStatusColor = (status) => {
   }
 };
 
+const calculateStatus = (startDate) => {
+  const today = new Date();
+  const start = new Date(startDate);
+
+  // Remove time portion for clean comparison
+  today.setHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
+
+  if (start.getTime() === today.getTime()) {
+    return "Active";
+  } else if (start.getTime() < today.getTime()) {
+    return "Active";
+  } else {
+    return "Upcoming";
+  }
+};
+
 const ClubEventCard = ({ event }) => {
+  const eventStatus = calculateStatus(event.start_date);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
       <div className="p-6">
@@ -22,10 +45,10 @@ const ClubEventCard = ({ event }) => {
           <h2 className="text-xl font-bold mb-2">{event.name}</h2>
           <span
             className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
-              event.status
+              eventStatus
             )}`}
           >
-            {event.status}
+            {eventStatus}
           </span>
         </div>
         <div className="mt-1 mb-3">
@@ -39,19 +62,21 @@ const ClubEventCard = ({ event }) => {
             {new Date(event.start_date).toLocaleDateString()}
           </p>
           <p className="text-gray-600">
-            <span className="font-semibold">Where:</span>{" "}
-            {event.location || "TBA"}
-          </p>
-          <p className="text-gray-600">
-            <span className="font-semibold">Handicap:</span>{" "}
-            {event.handicap ? "Required" : "Not required"}
-          </p>
-          <p className="text-gray-600">
             <span className="font-semibold">Description:</span>{" "}
             {event.description}
           </p>
         </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mt-4 flex items-center text-sm text-white bg-dark-green px-2 py-1 rounded cursor-pointer"
+        >
+          <Pencil className="w-4 h-4 mr-1" /> Edit Event
+        </button>
       </div>
+
+      {isModalOpen && (
+        <EditEventModal event={event} onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 };

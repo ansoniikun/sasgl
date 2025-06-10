@@ -326,7 +326,6 @@ const ClubDashboard = () => {
                 <th className="p-3">Date Joined</th>
                 <th className="p-3">Mobile</th>
                 <th className="p-3">Status</th>
-                <th className="p-3">Score</th>
               </tr>
             </thead>
             <tbody>
@@ -394,8 +393,6 @@ const ClubDashboard = () => {
                       member.status
                     )}
                   </td>
-
-                  <td className="p-3">{member.score}</td>
                 </tr>
               ))}
             </tbody>
@@ -403,7 +400,7 @@ const ClubDashboard = () => {
         </div>
       )}
 
-      {activeTab === "Active League" && leagueData && (
+      {activeTab === "Leaderboard" && leagueData && (
         <div className="ml-[25vw] mr-[5vw] mb-[2vh] flex-1 bg-white rounded-xl shadow-md mt-4">
           <table className="w-full text-sm table-auto mt-2">
             <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">

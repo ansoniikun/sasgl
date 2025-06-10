@@ -87,11 +87,11 @@ const Leagues = () => {
               key={league.id}
               className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
             >
-              <img
+              {/* <img
                 src={`${league.logo_url}`}
                 alt="Club Logo"
                 className="w-full h-48 object-cover"
-              />
+              /> */}
 
               <div className="p-6">
                 <div className="flex justify-between items-start">

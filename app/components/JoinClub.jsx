@@ -69,7 +69,7 @@ const JoinClub = () => {
 
       if (res.ok) {
         setClubStatuses((prev) => ({ ...prev, [clubId]: "pending" }));
-        setPopup("Join request submitted. Await captain approval.");
+        setPopup("Join request submitted. Awaiting captain approval.");
       } else {
         setPopup(result.error || "Failed to request to join club.");
       }

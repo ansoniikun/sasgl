@@ -25,7 +25,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
         name,
         type,
         start_date: startDate,
-        handicap,
+        handicap: false,
         description,
       };
 
@@ -52,6 +52,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
         const errMsg = await res.text();
         console.error("Failed to create event", errMsg);
       }
+      window.location.reload();
     } catch (err) {
       console.error("Error creating event:", err);
     } finally {
@@ -87,8 +88,6 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
             className="w-full p-2 border rounded"
           >
             <option value="league">League</option>
-            <option value="tournament">Tournament</option>
-            <option value="annual">Annual</option>
           </select>
 
           <input
@@ -98,52 +97,6 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
             required
             className="w-full p-2 border rounded"
           />
-
-          {type !== "league" && (
-            <>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-
-              <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </>
-          )}
-
-          <div className="flex gap-4 items-center">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="handicap"
-                value="true"
-                checked={handicap === true}
-                onChange={() => setHandicap(true)}
-                className="mr-1"
-              />
-              Handicap
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="handicap"
-                value="false"
-                checked={handicap === false}
-                onChange={() => setHandicap(false)}
-                className="mr-1"
-              />
-              No Handicap
-            </label>
-          </div>
 
           <div className="flex justify-end gap-2">
             <button

@@ -17,7 +17,6 @@ const Navbar = () => {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Active Leagues", href: "/leagues" },
     { name: "Shop", href: "#" },
     { name: "Contact Us", href: "/#contact" },
     {
