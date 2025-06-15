@@ -26,6 +26,7 @@ const ClubDashboard = () => {
   const [logoUrl, setLogoUrl] = useState(null);
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+
   const membersPerPage = 6;
 
   const router = useRouter();
@@ -227,6 +228,13 @@ const ClubDashboard = () => {
     }
   };
 
+  const indexOfLastMember = currentPage * membersPerPage;
+  const indexOfFirstMember = indexOfLastMember - membersPerPage;
+  const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
+  const totalPages = Math.ceil(members.length / membersPerPage);
+
+  console.log(currentMembers);
+
   if (loading)
     return <div className="p-6 text-center">Loading club data...</div>;
 
@@ -268,12 +276,6 @@ const ClubDashboard = () => {
         </div>
       </div>
     );
-
-  const indexOfLastMember = currentPage * membersPerPage;
-  const indexOfFirstMember = indexOfLastMember - membersPerPage;
-  const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
-
-  const totalPages = Math.ceil(members.length / membersPerPage);
 
   return (
     <div className="">
@@ -320,7 +322,7 @@ const ClubDashboard = () => {
       </div>
 
       {/* Main Content */}
-      {/* Table */}
+      {/* Members Table */}
       {activeTab === "Club Members" && (
         <div className="lg:ml-[25vw] lg:mr-[3vw] flex-1 bg-white rounded-xl shadow-md mt-4 overflow-x-auto">
           <table className="w-full text-sm table-auto">
