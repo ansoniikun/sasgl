@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../lib/config";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../lib/firebase";
 
 const EditClubPage = () => {
   const [clubData, setClubData] = useState(null);
@@ -11,6 +13,7 @@ const EditClubPage = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [logoFile, setLogoFile] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
   const router = useRouter();
@@ -65,7 +68,22 @@ const EditClubPage = () => {
     const token = getToken();
     if (!token || !clubData?.id) return;
 
+    let uploadedLogoFileName = logoUrl;
+
     try {
+      // If new logo selected, upload to Firebase
+      if (logoFile) {
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${name.replace(/\s+/g, "")}_${
+          logoFile.name
+        }`;
+        const storageRef = ref(storage, `club_logos/${fileName}`);
+
+        await uploadBytes(storageRef, logoFile);
+        uploadedLogoFileName = fileName;
+      }
+
+      // Patch club details including uploaded logo filename
       const res = await fetch(`${API_BASE_URL}/api/clubs/${clubData.id}`, {
         method: "PATCH",
         headers: {
@@ -75,7 +93,7 @@ const EditClubPage = () => {
         body: JSON.stringify({
           name,
           description,
-          logo_url: logoUrl,
+          logo: uploadedLogoFileName,
         }),
       });
 
@@ -117,14 +135,18 @@ const EditClubPage = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Logo URL</label>
+          <label className="block mb-1 font-medium">Upload Club Logo</label>
           <input
-            type="text"
-            value={logoUrl}
-            onChange={(e) => setLogoUrl(e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={(e) => setLogoFile(e.target.files[0])}
             className="w-full p-2 border rounded"
           />
         </div>
+
+        {logoUrl && (
+          <p className="text-sm text-gray-600">Current logo: {logoUrl}</p>
+        )}
 
         <div className="flex space-x-4">
           <button
