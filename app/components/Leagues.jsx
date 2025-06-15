@@ -128,7 +128,7 @@ const Leagues = () => {
                   </p>
                 </div>
                 <button
-                  className="mt-4 w-full bg-dark-green text-white py-2 rounded-md font-medium hover:bg-yellow-600 transition"
+                  className="mt-4 w-full bg-dark-green text-white py-2 rounded-md font-medium transition"
                   onClick={() => handleViewDetails(league.id, league.status)}
                 >
                   {league.status === "upcoming"
