@@ -25,6 +25,8 @@ const ClubDashboard = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [logoUrl, setLogoUrl] = useState(null);
   const [profilePicUrls, setProfilePicUrls] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const membersPerPage = 6;
 
   const router = useRouter();
 
@@ -267,6 +269,12 @@ const ClubDashboard = () => {
       </div>
     );
 
+  const indexOfLastMember = currentPage * membersPerPage;
+  const indexOfFirstMember = indexOfLastMember - membersPerPage;
+  const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
+
+  const totalPages = Math.ceil(members.length / membersPerPage);
+
   return (
     <div className="">
       <ClubDashboardNav />
@@ -329,9 +337,9 @@ const ClubDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {members.map((member, index) => (
+              {currentMembers.map((member, index) => (
                 <tr key={member.id} className=" hover:bg-gray-50 text-ash-gray">
-                  <td className="pl-5">{index + 1}</td>
+                  <td className="pl-5">{indexOfFirstMember + index + 1}</td>
                   <td className="p-3">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
                       {profilePicUrls[member.id] ? (
@@ -397,6 +405,39 @@ const ClubDashboard = () => {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-center items-center py-4 space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded text-sm ${
+                  currentPage === i + 1
+                    ? "bg-dark-green text-white"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
