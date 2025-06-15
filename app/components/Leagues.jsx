@@ -95,7 +95,11 @@ const Leagues = () => {
 
               <div className="p-6">
                 <div className="flex justify-between items-start">
-                  <h2 className="text-xl font-bold mb-2">{league.name}</h2>
+                  <h2 className="text-xl font-bold mb-2">
+                    {league.name.length > 28
+                      ? `${league.name.slice(0, 28)}...`
+                      : league.name}
+                  </h2>
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
                       league.status

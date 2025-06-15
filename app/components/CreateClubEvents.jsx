@@ -6,10 +6,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("league");
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
-  const [handicap, setHandicap] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const getToken = () => localStorage.getItem("token");
