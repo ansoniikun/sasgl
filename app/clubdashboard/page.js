@@ -232,8 +232,15 @@ const ClubDashboard = () => {
   const indexOfFirstMember = indexOfLastMember - membersPerPage;
   const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
   const totalPages = Math.ceil(members.length / membersPerPage);
-
-  console.log(currentMembers);
+  const totalLeaderboardPages = Math.ceil(
+    leagueData.leaderboard.length / membersPerPage
+  );
+  const indexOfLast = currentPage * membersPerPage;
+  const indexOfFirst = indexOfLast - membersPerPage;
+  const paginatedLeaderboard = leagueData.leaderboard.slice(
+    indexOfFirst,
+    indexOfLast
+  );
 
   if (loading)
     return <div className="p-6 text-center">Loading club data...</div>;
@@ -450,28 +457,67 @@ const ClubDashboard = () => {
               <tr>
                 <th className="p-3">#</th>
                 <th className="p-3">Player Name</th>
-                <th className="p-3">Games Played</th>
-                <th className="p-3">Points</th>
-                <th className="p-3">Birdies</th>
-                <th className="p-3">Avg Points</th>
+                <th className="p-3">Game 1</th>
+                <th className="p-3">Game 2</th>
+                <th className="p-3">Game 3</th>
+                <th className="p-3">Game 4</th>
+                <th className="p-3">Total</th>
               </tr>
             </thead>
             <tbody>
-              {leagueData.leaderboard.map((player, index) => (
+              {paginatedLeaderboard.map((player, index) => (
                 <tr
                   key={player.user_id}
                   className="text-ash-gray hover:bg-gray-50"
                 >
                   <td className="p-3">{index + 1}</td>
                   <td className="p-3 capitalize">{player.name}</td>
-                  <td className="p-3">{player.games_played}</td>
-                  <td className="p-3">{player.points}</td>
-                  <td className="p-3">{player.birdies}</td>
-                  <td className="p-3">{player.avg_points}</td>
+                  {[0, 1, 2, 3].map((i) => (
+                    <td key={i} className="p-3">
+                      {player.scores[i] !== undefined ? player.scores[i] : "-"}
+                    </td>
+                  ))}
+                  <td className="p-3 font-semibold">
+                    {player.scores.reduce((sum, p) => sum + p, 0)}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center py-4 space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded text-sm ${
+                  currentPage === i + 1
+                    ? "bg-dark-green text-white"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
