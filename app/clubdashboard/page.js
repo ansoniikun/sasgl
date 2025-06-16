@@ -489,7 +489,7 @@ const ClubDashboard = () => {
               Prev
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => (
+            {Array.from({ length: totalLeaderboardPages }, (_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
@@ -505,9 +505,11 @@ const ClubDashboard = () => {
 
             <button
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, totalLeaderboardPages)
+                )
               }
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalLeaderboardPages}
               className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
             >
               Next
