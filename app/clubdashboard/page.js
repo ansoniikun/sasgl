@@ -472,7 +472,9 @@ const ClubDashboard = () => {
                   key={player.user_id}
                   className="text-ash-gray hover:bg-gray-50"
                 >
-                  <td className="p-3">{index + 1}</td>
+                  <td className="p-3">
+                    {(currentPage - 1) * membersPerPage + index + 1}
+                  </td>
                   <td className="p-3 capitalize">{player.name}</td>
                   {[0, 1, 2, 3].map((i) => (
                     <td key={i} className="p-3">
