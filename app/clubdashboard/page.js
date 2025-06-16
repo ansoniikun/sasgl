@@ -232,15 +232,10 @@ const ClubDashboard = () => {
   const indexOfFirstMember = indexOfLastMember - membersPerPage;
   const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
   const totalPages = Math.ceil(members.length / membersPerPage);
-  const totalLeaderboardPages = Math.ceil(
-    leagueData.leaderboard.length / membersPerPage
-  );
+  const totalLeaderboardPages = Math.ceil(leagueData.length / membersPerPage);
   const indexOfLast = currentPage * membersPerPage;
   const indexOfFirst = indexOfLast - membersPerPage;
-  const paginatedLeaderboard = leagueData.leaderboard.slice(
-    indexOfFirst,
-    indexOfLast
-  );
+  const paginatedLeaderboard = leagueData.slice(indexOfFirst, indexOfLast);
 
   if (loading)
     return <div className="p-6 text-center">Loading club data...</div>;
