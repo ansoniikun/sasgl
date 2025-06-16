@@ -21,7 +21,7 @@ const ClubDashboard = () => {
   const [clubEvents, setClubEvents] = useState([]);
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState("Club Members");
-  const [leagueData, setLeagueData] = useState(null);
+  const [leagueData, setLeagueData] = useState({ leaderboard: [] });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [logoUrl, setLogoUrl] = useState(null);
   const [profilePicUrls, setProfilePicUrls] = useState({});
@@ -81,19 +81,20 @@ const ClubDashboard = () => {
           setMembers(membersData);
         }
 
-        if (club?.id) {
-          const leagueRes = await fetch(
+        if (club?.id && token) {
+          const res = await fetch(
             `${API_BASE_URL}/api/clubs/league/${club.id}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
 
-          if (leagueRes.ok) {
-            const data = await leagueRes.json();
+          if (res.ok) {
+            const data = await res.json();
             setLeagueData(data);
           } else {
             console.warn("No league data available");
+            setLeagueData({ leaderboard: [] }); // fallback
           }
         }
 
@@ -232,10 +233,16 @@ const ClubDashboard = () => {
   const indexOfFirstMember = indexOfLastMember - membersPerPage;
   const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
   const totalPages = Math.ceil(members.length / membersPerPage);
-  const totalLeaderboardPages = Math.ceil(leagueData.length / membersPerPage);
+  const totalLeaderboardPages = leagueData?.leaderboard
+    ? Math.ceil(leagueData.leaderboard.length / membersPerPage)
+    : 0;
+
   const indexOfLast = currentPage * membersPerPage;
   const indexOfFirst = indexOfLast - membersPerPage;
-  const paginatedLeaderboard = leagueData.slice(indexOfFirst, indexOfLast);
+
+  const paginatedLeaderboard = leagueData?.leaderboard
+    ? leagueData.leaderboard.slice(indexOfFirst, indexOfLast)
+    : [];
 
   if (loading)
     return <div className="p-6 text-center">Loading club data...</div>;
@@ -444,7 +451,7 @@ const ClubDashboard = () => {
           </div>
         </div>
       )}
-
+      {/*Leaderboard table*/}
       {activeTab === "Leaderboard" && leagueData && (
         <div className="ml-[25vw] mr-[5vw] mb-[2vh] flex-1 bg-white rounded-xl shadow-md mt-4">
           <table className="w-full text-sm table-auto mt-2">
