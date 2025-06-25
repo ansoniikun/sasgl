@@ -28,7 +28,7 @@ const ClubDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const membersPerPage = 10;
-  const leaderboardPerPage = 6;
+  const leaderboardPerPage = 10;
 
   const router = useRouter();
 
@@ -474,7 +474,7 @@ const ClubDashboard = () => {
                   className="text-ash-gray hover:bg-gray-50"
                 >
                   <td className="p-3">
-                    {(currentPage - 1) * membersPerPage + index + 1}
+                    {(currentPage - 1) * leaderboardPerPage + index + 1}
                   </td>
                   <td className="p-3 capitalize">{player.name}</td>
                   {[0, 1, 2, 3].map((i) => (
