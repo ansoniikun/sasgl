@@ -45,7 +45,7 @@ const ClubEventCard = ({ event }) => {
           <h2 className="text-xl font-bold mb-2">
             {" "}
             {event.name.length > 21
-              ? `${event.name.slice(0, 21)}...`
+              ? `${event.name.slice(0, 212)}...`
               : event.name}
           </h2>
           <span

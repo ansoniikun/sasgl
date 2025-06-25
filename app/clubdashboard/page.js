@@ -27,7 +27,8 @@ const ClubDashboard = () => {
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
-  const membersPerPage = 6;
+  const membersPerPage = 10;
+  const leaderboardPerPage = 6;
 
   const router = useRouter();
 
@@ -237,8 +238,8 @@ const ClubDashboard = () => {
     ? Math.ceil(leagueData.leaderboard.length / membersPerPage)
     : 0;
 
-  const indexOfLast = currentPage * membersPerPage;
-  const indexOfFirst = indexOfLast - membersPerPage;
+  const indexOfLast = currentPage * leaderboardPerPage;
+  const indexOfFirst = indexOfLast - leaderboardPerPage;
 
   const paginatedLeaderboard = leagueData?.leaderboard
     ? leagueData.leaderboard.slice(indexOfFirst, indexOfLast)
