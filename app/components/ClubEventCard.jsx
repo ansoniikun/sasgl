@@ -44,8 +44,8 @@ const ClubEventCard = ({ event }) => {
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold mb-2">
             {" "}
-            {event.name.length > 28
-              ? `${event.name.slice(0, 28)}...`
+            {event.name.length > 21
+              ? `${event.name.slice(0, 21)}...`
               : event.name}
           </h2>
           <span
