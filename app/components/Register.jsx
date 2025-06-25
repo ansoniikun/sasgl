@@ -24,16 +24,21 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        name,
+        password,
+        phone_number: phoneNumber,
+        role,
+      };
+
+      if (email.trim()) {
+        payload.email = email;
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          phone_number: phoneNumber,
-          role,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -159,7 +164,6 @@ const Register = () => {
               className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
 
             <p className="text-gray-500 mb-0">Phone Number</p>

@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); // new state for error
   const router = useRouter();
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,7 +24,7 @@ const Login = () => {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ phone_number: phoneNumber, password }),
       });
 
       const data = await res.json();
@@ -114,13 +115,13 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <p className="text-gray-500 mb-0">Email</p>
+            <p className="text-gray-500 mb-0">Phone Number</p>
             <input
-              type="email"
-              placeholder="mail@abc.com"
-              className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300  rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green "
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="tel"
+              placeholder="+27 71 234 5678"
+              className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               required
             />
             <p className="text-gray-500 mb-0">Password</p>
@@ -138,12 +139,12 @@ const Login = () => {
                 <input type="checkbox" className="accent-dark-green" />
                 Remember Me
               </label>
-              <Link
+              {/* <Link
                 href="/forgot-password"
                 className="text-dark-green font-medium"
               >
                 Forgot Password?
-              </Link>
+              </Link> */}
             </div>
 
             <button

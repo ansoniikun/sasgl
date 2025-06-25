@@ -42,7 +42,12 @@ const ClubEventCard = ({ event }) => {
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
       <div className="p-6">
         <div className="flex justify-between items-start">
-          <h2 className="text-xl font-bold mb-2">{event.name}</h2>
+          <h2 className="text-xl font-bold mb-2">
+            {" "}
+            {event.name.length > 28
+              ? `${event.name.slice(0, 28)}...`
+              : event.name}
+          </h2>
           <span
             className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
               eventStatus
