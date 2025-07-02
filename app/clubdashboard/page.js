@@ -27,8 +27,8 @@ const ClubDashboard = () => {
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
-  const membersPerPage = 10;
-  const leaderboardPerPage = 10;
+  const membersPerPage = 12;
+  const leaderboardPerPage = 12;
 
   const router = useRouter();
 
