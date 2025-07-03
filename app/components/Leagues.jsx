@@ -14,9 +14,23 @@ const Leagues = () => {
   useEffect(() => {
     const fetchLeagues = async () => {
       try {
+        const token = localStorage.getItem("token");
+  
         const res = await fetch(
-          `${API_BASE_URL}/api/leagues/active-leagues?t=${Date.now()}`
+          `${API_BASE_URL}/api/leagues/active-leagues?t=${Date.now()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+  
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+  
         const data = await res.json();
         setLeagues(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -24,9 +38,9 @@ const Leagues = () => {
         setLeagues([]);
       }
     };
-
+  
     fetchLeagues();
-  }, []);
+  }, []);  
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
