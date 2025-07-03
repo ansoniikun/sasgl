@@ -11,45 +11,60 @@ const JoinClub = () => {
   const [popup, setPopup] = useState(null);
 
   useEffect(() => {
-    const fetchClubs = async () => {
-      const res = await fetch(`${API_BASE_URL}/api/clubs/all`);
-      const data = await res.json();
-
-      const clubsWithLogos = await Promise.all(
-        data.map(async (club) => {
-          if (club.logo_url) {
-            try {
-              const logoRef = ref(storage, `club_logos/${club.logo_url}`);
-              const logoUrl = await getDownloadURL(logoRef);
-              return { ...club, logo_url: logoUrl };
-            } catch (err) {
-              console.error(`Error fetching logo for ${club.name}:`, err);
-              return { ...club, logo_url: null };
-            }
-          }
-          return club;
-        })
-      );
-
-      setClubs(clubsWithLogos);
-    };
-
-    const fetchUserStatuses = async () => {
+    const fetchData = async () => {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE_URL}/api/clubs/user-requests`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
 
-      const statusMap = {};
-      data.forEach((entry) => {
-        statusMap[entry.club_id] = entry.status;
-      });
-      setClubStatuses(statusMap);
+      try {
+        // Fetch both clubs and user requests in parallel
+        const [clubsRes, statusesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/clubs/all`),
+          fetch(`${API_BASE_URL}/api/clubs/user-requests`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        const [clubsData, statusesData] = await Promise.all([
+          clubsRes.json(),
+          statusesRes.json(),
+        ]);
+
+        // Cache Firebase logos
+        const clubsWithLogos = await Promise.all(
+          clubsData.map(async (club) => {
+            if (club.logo_url) {
+              const cacheKey = `club_logo_${club.id}`;
+              const cachedUrl = localStorage.getItem(cacheKey);
+
+              if (cachedUrl) {
+                return { ...club, logo_url: cachedUrl };
+              }
+
+              try {
+                const logoRef = ref(storage, `club_logos/${club.logo_url}`);
+                const logoUrl = await getDownloadURL(logoRef);
+                localStorage.setItem(cacheKey, logoUrl);
+                return { ...club, logo_url: logoUrl };
+              } catch (err) {
+                console.error(`Logo fetch error for ${club.name}:`, err);
+              }
+            }
+            return { ...club, logo_url: null };
+          })
+        );
+
+        const statusMap = {};
+        statusesData.forEach((entry) => {
+          statusMap[entry.club_id] = entry.status;
+        });
+
+        setClubs(clubsWithLogos);
+        setClubStatuses(statusMap);
+      } catch (err) {
+        console.error("Failed to fetch clubs or statuses:", err);
+      }
     };
 
-    fetchClubs();
-    fetchUserStatuses();
+    fetchData();
   }, []);
 
   const handleRequest = async (clubId) => {
@@ -81,7 +96,6 @@ const JoinClub = () => {
 
   return (
     <div className="relative">
-      {/* Popup */}
       {popup && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-md text-center max-w-sm">
@@ -102,7 +116,14 @@ const JoinClub = () => {
         </h1>
         <ul className="space-y-6">
           {clubs.map((club) => {
-            const status = clubStatuses[club.id];
+            const status = clubStatuses[club.id] || "none";
+            const isDisabled = ["pending", "approved"].includes(status);
+            const buttonLabel =
+              status === "approved"
+                ? "Approved"
+                : status === "pending"
+                ? "Requested"
+                : "Request to Join";
 
             return (
               <li
@@ -115,6 +136,7 @@ const JoinClub = () => {
                       src={club.logo_url}
                       alt={`${club.name} logo`}
                       className="w-16 h-16 object-cover rounded-4xl"
+                      loading="lazy"
                     />
                   )}
                   <div>
@@ -128,7 +150,7 @@ const JoinClub = () => {
                 </div>
                 <button
                   onClick={() => handleRequest(club.id)}
-                  disabled={status === "pending" || status === "approved"}
+                  disabled={isDisabled}
                   className={`text-white px-4 py-2 rounded w-full sm:w-auto ${
                     status === "approved"
                       ? "bg-green-600 cursor-not-allowed"
@@ -137,11 +159,7 @@ const JoinClub = () => {
                       : "bg-dark-gold hover:bg-yellow-700"
                   }`}
                 >
-                  {status === "approved"
-                    ? "Approved"
-                    : status === "pending"
-                    ? "Requested"
-                    : "Request to Join"}
+                  {buttonLabel}
                 </button>
               </li>
             );

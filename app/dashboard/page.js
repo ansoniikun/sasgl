@@ -1,77 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import DashboardNav from "../components/DashboardNav";
 import { API_BASE_URL } from "../lib/config";
-import { getDownloadURL, ref } from "firebase/storage"; // ✅
+import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebase";
 
 const DashboardPage = () => {
-  const [stats, setStats] = useState(null);
-  const [role, setRole] = useState(null);
-  const [profilePicUrl, setProfilePicUrl] = useState(null); // ✅
+  const [data, setData] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
+    const cached = sessionStorage.getItem("dashboardData");
+    if (cached) {
+      setData(JSON.parse(cached));
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return router.push("/login");
+
     const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return router.push("/login");
-
       try {
-        // Fetch stats
-        const statsRes = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const headers = { Authorization: `Bearer ${token}` };
 
-        const statsData = await statsRes.json();
-        if (!statsRes.ok) {
-          console.error("Error fetching stats:", statsData);
-        } else {
-          setStats(statsData);
+        const [statsRes, userRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/dashboard/stats`, { headers }),
+          fetch(`${API_BASE_URL}/api/users/me`, { headers }),
+        ]);
+
+        const [statsData, userData] = await Promise.all([
+          statsRes.json(),
+          userRes.json(),
+        ]);
+
+        if (!statsRes.ok || !userRes.ok) {
+          console.error("Failed to fetch stats or user");
+          return;
         }
 
-        // Fetch user role & profile_picture
-        const roleRes = await fetch(`${API_BASE_URL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        let profilePicUrl = null;
+        const { profile_picture } = userData;
 
-        const roleData = await roleRes.json();
-        if (!roleRes.ok) {
-          console.error("Error fetching user data:", roleData);
-        } else {
-          setRole(roleData.role);
-
-          if (roleData.profile_picture) {
-            // If the profile_picture is a full URL (e.g., from Google)
-            if (roleData.profile_picture.startsWith("http")) {
-              setProfilePicUrl(roleData.profile_picture);
-            } else {
-              // Otherwise, assume a Firebase Storage filename
-              const storageRef = ref(
-                storage,
-                `profile_pictures/${roleData.profile_picture}`
-              );
-              const url = await getDownloadURL(storageRef);
-              setProfilePicUrl(url);
-            }
-          }
+        if (profile_picture) {
+          profilePicUrl = profile_picture.startsWith("http")
+            ? profile_picture
+            : await getDownloadURL(ref(storage, `profile_pictures/${profile_picture}`));
         }
+
+        const combined = {
+          stats: statsData,
+          role: userData.role,
+          profilePicUrl,
+        };
+
+        setData(combined);
+        sessionStorage.setItem("dashboardData", JSON.stringify(combined));
       } catch (err) {
-        console.error("Network error:", err);
+        console.error("Error loading dashboard:", err);
       }
     };
 
     fetchData();
   }, [router]);
 
-  if (!stats || !role)
+  const canCreateClub = useMemo(
+    () => ["chairman", "captain"].includes(data?.role),
+    [data]
+  );
+
+  if (!data)
     return (
       <div className="text-center mt-10">
         <DashboardNav />
@@ -79,14 +80,13 @@ const DashboardPage = () => {
       </div>
     );
 
-  const canCreateClub = ["chairman", "captain"].includes(role);
+  const { stats, role, profilePicUrl } = data;
 
   return (
     <div className="bg-gray-100">
       <div className="max-w-7xl min-h-screen p-6 mx-auto">
         <DashboardNav role={role} />
 
-        {/* Profile Section */}
         <div className="pt-36 mb-6 flex flex-col items-center text-center">
           {profilePicUrl && (
             <div className="w-48 h-48 relative rounded-full overflow-hidden border-4 border-gray-300 mb-4 shadow">
@@ -102,7 +102,6 @@ const DashboardPage = () => {
           <h1 className="text-3xl font-bold">Welcome, {stats.name}</h1>
         </div>
 
-        {/* Edit Button */}
         <div className="flex justify-end mb-4">
           <Link
             href="/edit-profile"
@@ -112,29 +111,12 @@ const DashboardPage = () => {
           </Link>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-2">Total Points</h2>
-            <p className="text-2xl font-bold text-dark-gold">
-              {stats.total_points ?? 0}
-            </p>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-2">Events Played</h2>
-            <p className="text-2xl font-bold text-dark-gold">
-              {stats.events_played ?? 0}
-            </p>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-2">Best Score</h2>
-            <p className="text-2xl font-bold text-dark-gold">
-              {stats.best_score ?? 0}
-            </p>
-          </div>
+          <StatCard title="Total Points" value={stats.total_points} />
+          <StatCard title="Events Played" value={stats.events_played} />
+          <StatCard title="Best Score" value={stats.best_score} />
         </div>
 
-        {/* Club Buttons */}
         <div className="flex flex-col md:flex-row gap-4">
           <Link
             href="/joinclub"
@@ -156,5 +138,12 @@ const DashboardPage = () => {
     </div>
   );
 };
+
+const StatCard = ({ title, value }) => (
+  <div className="bg-white p-4 rounded shadow">
+    <h2 className="text-xl font-semibold mb-2">{title}</h2>
+    <p className="text-2xl font-bold text-dark-gold">{value ?? 0}</p>
+  </div>
+);
 
 export default DashboardPage;

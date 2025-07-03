@@ -10,15 +10,18 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../lib/firebase";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // new state for error
-  const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // reset error on each submit
+    setErrorMessage("");
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -30,7 +33,6 @@ const Login = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        // If login fails, show custom error message instead of alert
         setErrorMessage(
           "Sorry, your password was incorrect. Please double-check your password."
         );
@@ -42,31 +44,36 @@ const Login = () => {
       router.push("/dashboard");
     } catch (err) {
       setErrorMessage("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    setErrorMessage("");
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-        }),
+        body: JSON.stringify({ email: user.email }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) throw new Error(data.error || "Google login failed");
+      if (!res.ok) throw new Error(data.error || "Google login failed");
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("loginTime", Date.now().toString());
       router.push("/dashboard");
-    } catch (error) {
-      setErrorMessage(error.message);
+    } catch (err) {
+      setErrorMessage(err.message || "Google login failed.");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -75,7 +82,7 @@ const Login = () => {
       {/* Left Image */}
       <div className="w-5/6 hidden lg:block relative">
         <Image
-          src="/login.png" // Ensure this image exists in your /public folder
+          src="/login.png"
           alt="Golf Carts"
           fill
           className="object-cover"
@@ -87,7 +94,7 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-8">
         <div className="w-full max-w-md space-y-6">
           {/* Logo */}
-          <div className="flex " onClick={() => router.push("/")}>
+          <div className="flex cursor-pointer" onClick={() => router.push("/")}>
             <Image src="/logo.jpg" alt="Logo" width={60} height={60} />
           </div>
 
@@ -101,63 +108,66 @@ const Login = () => {
           {/* Google Sign In */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex text-gray-500 font-semibold text-sm items-center justify-center border border-gray-300  rounded-md py-2 gap-2 hover:bg-gray-50 cursor-pointer"
+            disabled={googleLoading}
+            className="w-full flex items-center justify-center text-gray-500 font-semibold text-sm border border-gray-300 rounded-md py-2 gap-2 hover:bg-gray-50 transition disabled:opacity-60"
           >
-            <FcGoogle size={20} className="mr-2" />
-            <span>Continue with Google</span>
+            <FcGoogle size={20} />
+            {googleLoading ? "Signing in..." : "Continue with Google"}
           </button>
 
           {/* Separator */}
           <div className="flex items-center text-gray-400 text-sm gap-2">
             <span className="flex-grow border-b"></span>
-            <span className="whitespace-nowrap">or Sign in with Email</span>
+            <span className="whitespace-nowrap">or Sign in with Phone</span>
             <span className="flex-grow border-b"></span>
           </div>
 
+          {/* Error Message */}
+          {errorMessage && (
+            <p className="text-sm text-center text-red-500">{errorMessage}</p>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-4">
-            <p className="text-gray-500 mb-0">Phone Number</p>
-            <input
-              type="tel"
-              placeholder="+27 71 234 5678"
-              className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              required
-            />
-            <p className="text-gray-500 mb-0">Password</p>
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div>
+              <p className="text-gray-500 mb-0">Phone Number</p>
+              <input
+                type="tel"
+                placeholder="+27 71 234 5678"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+                className="w-full px-4 py-2 border placeholder:text-sm placeholder-gray-300 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+              />
+            </div>
+
+            <div>
+              <p className="text-gray-500 mb-0">Password</p>
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-2 border placeholder:text-sm placeholder-gray-300 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+              />
+            </div>
 
             <div className="flex items-center justify-between text-sm text-gray-400">
-              <label className="flex items-center gap-1 ">
+              <label className="flex items-center gap-1">
                 <input type="checkbox" className="accent-dark-green" />
                 Remember Me
               </label>
-              {/* <Link
-                href="/forgot-password"
-                className="text-dark-green font-medium"
-              >
-                Forgot Password?
-              </Link> */}
+              {/* <Link href="/forgot-password" className="text-dark-green font-medium">Forgot Password?</Link> */}
             </div>
 
             <button
               type="submit"
-              className="w-full bg-dark-green text-white py-2 rounded-md hover:opacity-90 transition"
+              disabled={loading}
+              className="w-full bg-dark-green text-white py-2 rounded-md hover:opacity-90 transition disabled:opacity-70"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
-
-          {errorMessage && (
-            <p className="text-sm text-center text-red-500">{errorMessage}</p>
-          )}
 
           <p className="text-center text-sm text-gray-400">
             Not Registered Yet?{" "}

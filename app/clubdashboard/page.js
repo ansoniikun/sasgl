@@ -35,6 +35,25 @@ const ClubDashboard = () => {
   const getToken = () => localStorage.getItem("token");
 
   useEffect(() => {
+    const cached = sessionStorage.getItem("clubDashboardData");
+    if (cached) {
+      const {
+        club, membersData, leagueData, clubEvents,
+        profilePicUrls, logoUrl, userId, userRole
+      } = JSON.parse(cached);
+
+      setClubData(club);
+      setMembers(membersData);
+      setLeagueData(leagueData);
+      setClubEvents(clubEvents);
+      setProfilePicUrls(profilePicUrls);
+      setLogoUrl(logoUrl);
+      setCurrentUserId(userId);
+      setCurrentUserRole(userRole);
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -44,111 +63,69 @@ const ClubDashboard = () => {
           return;
         }
 
-        // Get current user
-        const userRes = await fetch(`${API_BASE_URL}/api/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const headers = { Authorization: `Bearer ${token}` };
 
-        if (!userRes.ok) throw new Error("Failed to get user");
-        const user = await userRes.json();
-        setCurrentUserId(user.id);
-        setCurrentUserRole(user.role);
+        const [userRes, clubRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/users/me`, { headers }),
+          fetch(`${API_BASE_URL}/api/clubs/myclub`, { headers })
+        ]);
 
-        // Get club data
-        const clubRes = await fetch(`${API_BASE_URL}/api/clubs/myclub`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!clubRes.ok) {
+        if (!userRes.ok || !clubRes.ok) {
           setNoClub(true);
           return;
         }
 
+        const user = await userRes.json();
         const club = await clubRes.json();
+        setCurrentUserId(user.id);
+        setCurrentUserRole(user.role);
         setClubData(club);
 
-        // Get club members
-        const membersRes = await fetch(
-          `${API_BASE_URL}/api/clubs/${club.id}/members`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const [membersRes, leagueRes, eventsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/clubs/${club.id}/members`, { headers }),
+          fetch(`${API_BASE_URL}/api/clubs/league/${club.id}`, { headers }),
+          fetch(`${API_BASE_URL}/api/events/club/${club.id}`, { headers })
+        ]);
 
-        let membersData = []; // define here
+        const membersData = membersRes.ok ? await membersRes.json() : [];
+        const league = leagueRes.ok ? await leagueRes.json() : { leaderboard: [] };
+        const eventsData = eventsRes.ok ? await eventsRes.json() : [];
 
-        if (membersRes.ok) {
-          membersData = await membersRes.json();
-          setMembers(membersData);
-        }
+        setMembers(membersData);
+        setLeagueData(league);
+        setClubEvents(eventsData);
 
-        if (club?.id && token) {
-          const res = await fetch(
-            `${API_BASE_URL}/api/clubs/league/${club.id}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (res.ok) {
-            const data = await res.json();
-            setLeagueData(data);
-          } else {
-            console.warn("No league data available");
-            setLeagueData({ leaderboard: [] }); // fallback
-          }
-        }
-
-        // Get club events
-        const eventsRes = await fetch(
-          `${API_BASE_URL}/api/events/club/${club.id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (eventsRes.ok) {
-          const eventsData = await eventsRes.json();
-          setClubEvents(eventsData);
-        } else {
-          console.error("Failed to fetch events for club.");
-        }
-
+        let logoUrl = null;
         if (club.logo_url) {
-          const logoRef = ref(storage, `club_logos/${club.logo_url}`);
           try {
-            const url = await getDownloadURL(logoRef);
-            setLogoUrl(url);
+            logoUrl = await getDownloadURL(ref(storage, `club_logos/${club.logo_url}`));
+            setLogoUrl(logoUrl);
           } catch (err) {
-            console.error("Failed to load club logo:", err);
+            console.error("Failed to load logo", err);
           }
         }
 
-        if (membersData.length > 0) {
-          const urls = {};
-          await Promise.all(
-            membersData.map(async (member) => {
-              if (member.profile_picture) {
-                const picRef = ref(
-                  storage,
-                  `profile_pictures/${member.profile_picture}`
-                );
-                try {
-                  const url = await getDownloadURL(picRef);
-                  urls[member.id] = url;
-                } catch (err) {
-                  console.error(
-                    `Failed to fetch profile picture for ${member.name}`,
-                    err
-                  );
-                }
+        const urls = {};
+        await Promise.all(
+          membersData.map(async (m) => {
+            if (m.profile_picture) {
+              try {
+                urls[m.id] = await getDownloadURL(ref(storage, `profile_pictures/${m.profile_picture}`));
+              } catch (err) {
+                console.warn(`No profile picture for ${m.name}`);
               }
-            })
-          );
-          setProfilePicUrls(urls);
-        }
+            }
+          })
+        );
+        setProfilePicUrls(urls);
+
+        sessionStorage.setItem("clubDashboardData", JSON.stringify({
+          club, membersData, leagueData: league,
+          clubEvents: eventsData, profilePicUrls: urls,
+          logoUrl, userId: user.id, userRole: user.role
+        }));
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Dashboard load error", err);
         setNoClub(true);
       } finally {
         setLoading(false);
@@ -157,6 +134,7 @@ const ClubDashboard = () => {
 
     fetchData();
   }, []);
+
 
   const approveMember = async (memberId) => {
     const token = getToken();

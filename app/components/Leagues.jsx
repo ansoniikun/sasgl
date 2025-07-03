@@ -1,46 +1,31 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import { API_BASE_URL } from "../lib/config";
 
+const leaguesPerPage = 6;
+
+const fetcher = (url) =>
+  fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  }).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+  });
+
 const Leagues = () => {
-  const [leagues, setLeagues] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showUnauthorizedPopup, setShowUnauthorizedPopup] = useState(false);
-
-  const leaguesPerPage = 6;
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchLeagues = async () => {
-      try {
-        const token = localStorage.getItem("token");
-  
-        const res = await fetch(
-          `${API_BASE_URL}/api/leagues/active-leagues?t=${Date.now()}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-  
-        const data = await res.json();
-        setLeagues(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Failed to fetch leagues", error);
-        setLeagues([]);
-      }
-    };
-  
-    fetchLeagues();
-  }, []);  
+  const { data: leagues = [], error, isLoading } = useSWR(
+    `${API_BASE_URL}/api/leagues/active-leagues?page=${currentPage}&per_page=${leaguesPerPage}`,
+    fetcher
+  );
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -78,10 +63,7 @@ const Leagues = () => {
     }
   };
 
-  const indexOfLast = currentPage * leaguesPerPage;
-  const indexOfFirst = indexOfLast - leaguesPerPage;
-  const currentLeagues = leagues.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(leagues.length / leaguesPerPage);
+  const totalPages = Math.ceil(leagues?.total_count / leaguesPerPage);
 
   return (
     <div>
@@ -95,91 +77,98 @@ const Leagues = () => {
       </div>
 
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentLeagues.map((league) => (
-            <div
-              key={league.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
-            >
-              {/* <img
-                src={`${league.logo_url}`}
-                alt="Club Logo"
-                className="w-full h-48 object-cover"
-              /> */}
-
-              <div className="p-6">
-                <div className="flex justify-between items-start">
-                  <h2 className="text-xl font-bold mb-2">
-                    {league.name.length > 28
-                      ? `${league.name.slice(0, 28)}...`
-                      : league.name}
-                  </h2>
-                  <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
-                      league.status
-                    )}`}
-                  >
-                    {league.status}
-                  </span>
-                </div>
-                <div className="mt-1 mb-3">
-                  <span className="text-sm font-medium text-gray-700">
-                    {league.type}
-                  </span>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <p className="text-gray-600">
-                    <span className="font-semibold">When:</span>{" "}
-                    {new Date(league.start_date).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-semibold">Description:</span>{" "}
-                    {league.description}
-                  </p>
-                </div>
-                <button
-                  className="mt-4 w-full bg-dark-green text-white py-2 rounded-md font-medium transition"
-                  onClick={() => handleViewDetails(league.id, league.status)}
+        {isLoading ? (
+          <p className="text-center text-gray-500 mt-10">Loading leagues...</p>
+        ) : error ? (
+          <p className="text-center text-red-500 mt-10">
+            Failed to load leagues.
+          </p>
+        ) : leagues.data.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">No leagues found.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {leagues.data.map((league) => (
+                <div
+                  key={league.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
                 >
-                  {league.status === "upcoming"
-                    ? "Register Now"
-                    : "View Details"}
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <h2 className="text-xl font-bold mb-2">
+                        {league.name.length > 28
+                          ? `${league.name.slice(0, 28)}...`
+                          : league.name}
+                      </h2>
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
+                          league.status
+                        )}`}
+                      >
+                        {league.status}
+                      </span>
+                    </div>
+                    <div className="mt-1 mb-3">
+                      <span className="text-sm font-medium text-gray-700">
+                        {league.type}
+                      </span>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <p className="text-gray-600">
+                        <span className="font-semibold">When:</span>{" "}
+                        {new Date(league.start_date).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Description:</span>{" "}
+                        {league.description}
+                      </p>
+                    </div>
+                    <button
+                      className="mt-4 w-full bg-dark-green text-white py-2 rounded-md font-medium transition"
+                      onClick={() => handleViewDetails(league.id, league.status)}
+                    >
+                      {league.status === "upcoming"
+                        ? "Register Now"
+                        : "View Details"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-10 space-x-4">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="text-gray-700 font-medium">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Next
                 </button>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-10 space-x-4">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span className="text-gray-700 font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+            )}
+          </>
         )}
       </div>
+
       {showUnauthorizedPopup && (
-        <div className="fixed inset-0 bg-black/40 bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
             <h2 className="text-xl font-bold mb-4">Access Denied</h2>
             <p className="text-gray-700 mb-6">

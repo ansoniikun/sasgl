@@ -1,18 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { logout } from "../utils/logout";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../lib/config";
 
 const DashboardNav = ({ role }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userClubs, setUserClubs] = useState([]);
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchClubs = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/clubs/myclubs`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUserClubs(data);
+        }
+      } catch (err) {
+        console.error("Error fetching user clubs:", err);
+      }
+    };
+
+    fetchClubs();
+  }, []);
+
+  const handleClubSelect = (clubId) => {
+    router.push(`/clubdashboard?club=${clubId}`);
+  };
+
   const handleLogout = () => {
-    logout(); // remove token and redirect
+    logout();
   };
 
   const links = [
@@ -23,7 +53,6 @@ const DashboardNav = ({ role }) => {
       ? [{ name: "Create Club", href: "/createclub" }]
       : []),
     { name: "My Dashboard", href: "/dashboard" },
-    { name: "Club Dashboard", href: "/clubdashboard" },
   ];
 
   return (
@@ -39,6 +68,7 @@ const DashboardNav = ({ role }) => {
           priority
         />
 
+        {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6 items-center">
           {links.map((link) => (
             <Link
@@ -49,6 +79,25 @@ const DashboardNav = ({ role }) => {
               {link.name}
             </Link>
           ))}
+
+          {/* Club Dropdown */}
+          {userClubs.length > 0 && (
+            <select
+              onChange={(e) => handleClubSelect(e.target.value)}
+              defaultValue=""
+              className="uppercase border border-dark-gold px-2 py-1 rounded-md bg-white text-gray-800 hover:cursor-pointer"
+            >
+              <option disabled value="">
+                Club Dashboard
+              </option>
+              {userClubs.map((club) => (
+                <option key={club.id} value={club.id} className="text-black">
+                  {club.name}
+                </option>
+              ))}
+            </select>
+          )}
+
           <button
             onClick={handleLogout}
             className="uppercase px-4 py-1 rounded-md bg-dark-gold text-white transition hover:bg-yellow-600"
@@ -57,6 +106,7 @@ const DashboardNav = ({ role }) => {
           </button>
         </div>
 
+        {/* Mobile Menu Toggle */}
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -67,6 +117,7 @@ const DashboardNav = ({ role }) => {
         </div>
       </div>
 
+      {/* Mobile Navigation Menu */}
       {isOpen && (
         <div className="md:hidden flex flex-col items-center py-4 animate-slide-down">
           {links.map((link) => (
@@ -79,6 +130,21 @@ const DashboardNav = ({ role }) => {
               {link.name}
             </Link>
           ))}
+
+          {userClubs.length > 0 &&
+            userClubs.map((club) => (
+              <button
+                key={club.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  handleClubSelect(club.id);
+                }}
+                className="py-2 text-gray-800 hover:text-dark-gold transition w-full text-center uppercase border-b border-gray-300"
+              >
+                {club.name} Dashboard
+              </button>
+            ))}
+
           <button
             onClick={() => {
               setIsOpen(false);
