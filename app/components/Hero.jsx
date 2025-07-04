@@ -1,72 +1,87 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "./Navbar";
 
 const images = ["/hero1.jpg", "/hero2.jpg", "/hero4.jpg"];
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState("top");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideInterval = useRef(null);
 
   const clearSlideInterval = () => {
-    if (slideInterval.current) {
-      clearInterval(slideInterval.current);
-    }
+    if (slideInterval.current) clearInterval(slideInterval.current);
   };
 
   const startSlideShow = () => {
     clearSlideInterval();
     slideInterval.current = setInterval(() => {
-      setDirection("top");
       setCurrent((prev) => (prev + 1) % images.length);
     }, 5000);
   };
 
   const nextSlide = () => {
-    setDirection("top");
+    clearSlideInterval();
     setCurrent((prev) => (prev + 1) % images.length);
+    startSlideShow();
   };
 
   const prevSlide = () => {
-    setDirection("bottom");
+    clearSlideInterval();
     setCurrent((prev) => (prev - 1 + images.length) % images.length);
+    startSlideShow();
   };
 
   useEffect(() => {
     startSlideShow();
     return clearSlideInterval;
-  }, [current]);
-
-  useEffect(() => {
-    startSlideShow();
-    return clearSlideInterval;
   }, []);
 
   useEffect(() => {
-    // Check login status based on token
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
+
+  const loginCTA = useMemo(() => {
+    if (!isLoggedIn) {
+      return (
+        <Link
+          href="/register"
+          className="bg-dark-gold hover:bg-dark-gold/90 text-white font-semibold px-6 py-2 rounded transition-all duration-200"
+        >
+          Register
+        </Link>
+      );
+    }
+    return null;
+  }, [isLoggedIn]);
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <Navbar />
 
-      {/* Background Images - removed pointer-events-none completely */}
-      {images.map((img, index) => (
+      {/* Optimized Image Backgrounds */}
+      {images.map((src, index) => (
         <div
           key={index}
-          className={`absolute top-0 left-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out z-0
-            ${index === current ? "opacity-100" : "opacity-0"}
-          `}
-          style={{ backgroundImage: `url(${img})` }}
-        />
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out z-0 ${
+            index === current ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={src}
+            alt={`Hero Slide ${index + 1}`}
+            fill
+            className="object-cover"
+            priority={index === 0}
+            sizes="100vw"
+          />
+        </div>
       ))}
+
 
       {/* Content Container - added pointer-events-auto */}
       <div className="absolute inset-0 z-10 pointer-events-auto">
