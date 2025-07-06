@@ -154,11 +154,18 @@ const ClubDashboard = () => {
       );
 
       if (res.ok) {
-        setMembers((prev) =>
-          prev.map((m) =>
+        setMembers((prev) => {
+          const updated = prev.map((m) =>
             m.id === memberId ? { ...m, status: "approved" } : m
-          )
-        );
+          );
+          
+          // Update sessionStorage to reflect new status
+          const dashboardData = JSON.parse(sessionStorage.getItem("clubDashboardData"));
+          dashboardData.membersData = updated;
+          sessionStorage.setItem("clubDashboardData", JSON.stringify(dashboardData));
+      
+          return updated;
+        });
       } else {
         alert("Failed to approve member");
       }
@@ -192,8 +199,17 @@ const ClubDashboard = () => {
       );
 
       if (res.ok) {
-        setMembers((prev) => prev.filter((m) => m.id !== memberId));
-      } else {
+        setMembers((prev) => {
+          const updated = prev.filter((m) => m.id !== memberId);
+      
+          const dashboardData = JSON.parse(sessionStorage.getItem("clubDashboardData"));
+          dashboardData.membersData = updated;
+          sessionStorage.setItem("clubDashboardData", JSON.stringify(dashboardData));
+      
+          return updated;
+        });
+      }
+       else {
         alert("Failed to reject member");
       }
     } catch (err) {

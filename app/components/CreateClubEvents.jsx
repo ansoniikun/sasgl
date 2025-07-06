@@ -43,13 +43,22 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
 
       if (res.ok) {
         const newEvent = await res.json();
+      
+        // Update local cache
+        const cached = sessionStorage.getItem("clubDashboardData");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          parsed.clubEvents = [...parsed.clubEvents, newEvent];
+          sessionStorage.setItem("clubDashboardData", JSON.stringify(parsed));
+        }
+      
         onEventCreated(newEvent);
-        onClose(); // close the modal after creation
+        onClose();
+        window.location.reload();
       } else {
         const errMsg = await res.text();
         console.error("Failed to create event", errMsg);
       }
-      window.location.reload();
     } catch (err) {
       console.error("Error creating event:", err);
     } finally {

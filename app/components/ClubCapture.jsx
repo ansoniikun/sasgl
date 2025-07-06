@@ -114,10 +114,30 @@ const ClubCapture = () => {
       }
 
       alert("Scores submitted successfully!");
+
+      // Refetch updated leaderboard
+      const leaderboardRes = await fetch(`${API_BASE_URL}/api/clubs/league/${clubId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const updatedLeagueData = await leaderboardRes.json();
+      
+      // Update cache
+      const cached = sessionStorage.getItem("clubDashboardData");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        parsed.leagueData = updatedLeagueData;
+        sessionStorage.setItem("clubDashboardData", JSON.stringify(parsed));
+      }
+      
+      // Reset form
       e.target.reset();
       setSelectedEventId("");
       setSelectedPlayerId("");
-      window.location.reload();
+      
+      // Optionally reload if needed, but no stale data now
+      window.location.reload();      
     } catch (err) {
       console.error("Submission failed:", err);
       alert("Failed to submit stats.");
