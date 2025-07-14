@@ -29,12 +29,15 @@ const ClubDashboard = () => {
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
+
   const membersPerPage = 12;
   const leaderboardPerPage = 12;
 
   const router = useRouter();
 
   const getToken = () => localStorage.getItem("token");
+
+
 
 const searchParams = useSearchParams();
 const selectedClubId = searchParams.get("club");
@@ -43,8 +46,9 @@ useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      sessionStorage.removeItem("clubDashboardData"); // clear old data on club switch
       const token = getToken();
-      if (!token || !selectedClubId) {
+      if (!token) {
         setNoClub(true);
         return;
       }
@@ -53,7 +57,7 @@ useEffect(() => {
 
       const [userRes, clubRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/users/me`, { headers }),
-        fetch(`${API_BASE_URL}/api/clubs/${selectedClubId}`, { headers })
+        fetch(`${API_BASE_URL}/api/clubs/${selectedClubId || "myclub"}`, { headers }),
       ]);
 
       if (!userRes.ok || !clubRes.ok) {
@@ -104,6 +108,12 @@ useEffect(() => {
         })
       );
       setProfilePicUrls(urls);
+
+      sessionStorage.setItem("clubDashboardData", JSON.stringify({
+        club, membersData, leagueData: league,
+        clubEvents: eventsData, profilePicUrls: urls,
+        logoUrl, userId: user.id, userRole: user.role
+      }));
     } catch (err) {
       console.error("Dashboard load error", err);
       setNoClub(true);
@@ -112,13 +122,8 @@ useEffect(() => {
     }
   };
 
-  // Optional: clear stale cache
-  sessionStorage.removeItem("clubDashboardData");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
   fetchData();
-}, [selectedClubId]);
-
+}, [selectedClubId]); // 🔁 refetches when club changes
 
 
   const approveMember = async (memberId) => {
