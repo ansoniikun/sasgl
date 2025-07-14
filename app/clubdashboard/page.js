@@ -10,6 +10,8 @@ import CreateClubEventForm from "../components/CreateClubEvents";
 import ClubDashboardNav from "../components/ClubDashboardNav";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebase";
+import { useSearchParams } from "next/navigation";
+
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -34,106 +36,89 @@ const ClubDashboard = () => {
 
   const getToken = () => localStorage.getItem("token");
 
-  useEffect(() => {
-    const cached = sessionStorage.getItem("clubDashboardData");
-    if (cached) {
-      const {
-        club, membersData, leagueData, clubEvents,
-        profilePicUrls, logoUrl, userId, userRole
-      } = JSON.parse(cached);
+const searchParams = useSearchParams();
+const selectedClubId = searchParams.get("club");
 
-      setClubData(club);
-      setMembers(membersData);
-      setLeagueData(leagueData);
-      setClubEvents(clubEvents);
-      setProfilePicUrls(profilePicUrls);
-      setLogoUrl(logoUrl);
-      setCurrentUserId(userId);
-      setCurrentUserRole(userRole);
-      setLoading(false);
-      return;
-    }
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const token = getToken();
-        if (!token) {
-          setNoClub(true);
-          return;
-        }
-
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const [userRes, clubRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/users/me`, { headers }),
-          fetch(`${API_BASE_URL}/api/clubs/myclub`, { headers })
-        ]);
-
-        if (!userRes.ok || !clubRes.ok) {
-          setNoClub(true);
-          return;
-        }
-
-        const user = await userRes.json();
-        const club = await clubRes.json();
-        setCurrentUserId(user.id);
-        setCurrentUserRole(user.role);
-        setClubData(club);
-
-        const [membersRes, leagueRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/clubs/${club.id}/members`, { headers }),
-          fetch(`${API_BASE_URL}/api/clubs/league/${club.id}`, { headers }),
-          fetch(`${API_BASE_URL}/api/events/club/${club.id}`, { headers })
-        ]);
-
-        const membersData = membersRes.ok ? await membersRes.json() : [];
-        const league = leagueRes.ok ? await leagueRes.json() : { leaderboard: [] };
-        const eventsData = eventsRes.ok ? await eventsRes.json() : [];
-
-        setMembers(membersData);
-        setLeagueData(league);
-        setClubEvents(eventsData);
-
-        let logoUrl = null;
-        if (club.logo_url) {
-          try {
-            logoUrl = await getDownloadURL(ref(storage, `club_logos/${club.logo_url}`));
-            setLogoUrl(logoUrl);
-          } catch (err) {
-            console.error("Failed to load logo", err);
-          }
-        }
-
-        const urls = {};
-        await Promise.all(
-          membersData.map(async (m) => {
-            if (m.profile_picture) {
-              try {
-                urls[m.id] = await getDownloadURL(ref(storage, `profile_pictures/${m.profile_picture}`));
-              } catch (err) {
-                console.warn(`No profile picture for ${m.name}`);
-              }
-            }
-          })
-        );
-        setProfilePicUrls(urls);
-
-        sessionStorage.setItem("clubDashboardData", JSON.stringify({
-          club, membersData, leagueData: league,
-          clubEvents: eventsData, profilePicUrls: urls,
-          logoUrl, userId: user.id, userRole: user.role
-        }));
-      } catch (err) {
-        console.error("Dashboard load error", err);
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const token = getToken();
+      if (!token || !selectedClubId) {
         setNoClub(true);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchData();
-  }, []);
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [userRes, clubRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/users/me`, { headers }),
+        fetch(`${API_BASE_URL}/api/clubs/${selectedClubId}`, { headers })
+      ]);
+
+      if (!userRes.ok || !clubRes.ok) {
+        setNoClub(true);
+        return;
+      }
+
+      const user = await userRes.json();
+      const club = await clubRes.json();
+      setCurrentUserId(user.id);
+      setCurrentUserRole(user.role);
+      setClubData(club);
+
+      const [membersRes, leagueRes, eventsRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/clubs/${club.id}/members`, { headers }),
+        fetch(`${API_BASE_URL}/api/clubs/league/${club.id}`, { headers }),
+        fetch(`${API_BASE_URL}/api/events/club/${club.id}`, { headers })
+      ]);
+
+      const membersData = membersRes.ok ? await membersRes.json() : [];
+      const league = leagueRes.ok ? await leagueRes.json() : { leaderboard: [] };
+      const eventsData = eventsRes.ok ? await eventsRes.json() : [];
+
+      setMembers(membersData);
+      setLeagueData(league);
+      setClubEvents(eventsData);
+
+      let logoUrl = null;
+      if (club.logo_url) {
+        try {
+          logoUrl = await getDownloadURL(ref(storage, `club_logos/${club.logo_url}`));
+          setLogoUrl(logoUrl);
+        } catch (err) {
+          console.error("Failed to load logo", err);
+        }
+      }
+
+      const urls = {};
+      await Promise.all(
+        membersData.map(async (m) => {
+          if (m.profile_picture) {
+            try {
+              urls[m.id] = await getDownloadURL(ref(storage, `profile_pictures/${m.profile_picture}`));
+            } catch (err) {
+              console.warn(`No profile picture for ${m.name}`);
+            }
+          }
+        })
+      );
+      setProfilePicUrls(urls);
+    } catch (err) {
+      console.error("Dashboard load error", err);
+      setNoClub(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Optional: clear stale cache
+  sessionStorage.removeItem("clubDashboardData");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  fetchData();
+}, [selectedClubId]);
+
 
 
   const approveMember = async (memberId) => {
