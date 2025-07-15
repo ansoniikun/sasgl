@@ -38,7 +38,7 @@ const DashboardNav = ({ role }) => {
   }, []);
 
   const handleClubSelect = (clubId) => {
-    router.push(`/clubdashboard?club=${clubId}`);
+    window.location.href = `/clubdashboard?club=${clubId}`;
   };
 
   const handleLogout = () => {

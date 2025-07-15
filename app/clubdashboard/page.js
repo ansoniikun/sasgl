@@ -10,8 +10,6 @@ import CreateClubEventForm from "../components/CreateClubEvents";
 import ClubDashboardNav from "../components/ClubDashboardNav";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebase";
-import { useSearchParams } from "next/navigation";
-
 
 const ClubDashboard = () => {
   const [clubData, setClubData] = useState(null);
@@ -29,7 +27,6 @@ const ClubDashboard = () => {
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
-
   const membersPerPage = 12;
   const leaderboardPerPage = 12;
 
@@ -37,18 +34,22 @@ const ClubDashboard = () => {
 
   const getToken = () => localStorage.getItem("token");
 
-
-
-const searchParams = useSearchParams();
-const selectedClubId = searchParams.get("club");
-
 useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
+
     try {
-      sessionStorage.removeItem("clubDashboardData"); // clear old data on club switch
       const token = getToken();
       if (!token) {
+        setNoClub(true);
+        return;
+      }
+
+      // Extract club ID from query string
+      const params = new URLSearchParams(window.location.search);
+      const clubId = params.get("club");
+
+      if (!clubId) {
         setNoClub(true);
         return;
       }
@@ -57,7 +58,7 @@ useEffect(() => {
 
       const [userRes, clubRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/users/me`, { headers }),
-        fetch(`${API_BASE_URL}/api/clubs/${selectedClubId || "myclub"}`, { headers }),
+        fetch(`${API_BASE_URL}/api/clubs/${clubId}`, { headers })
       ]);
 
       if (!userRes.ok || !clubRes.ok) {
@@ -67,6 +68,7 @@ useEffect(() => {
 
       const user = await userRes.json();
       const club = await clubRes.json();
+
       setCurrentUserId(user.id);
       setCurrentUserRole(user.role);
       setClubData(club);
@@ -109,11 +111,6 @@ useEffect(() => {
       );
       setProfilePicUrls(urls);
 
-      sessionStorage.setItem("clubDashboardData", JSON.stringify({
-        club, membersData, leagueData: league,
-        clubEvents: eventsData, profilePicUrls: urls,
-        logoUrl, userId: user.id, userRole: user.role
-      }));
     } catch (err) {
       console.error("Dashboard load error", err);
       setNoClub(true);
@@ -122,8 +119,11 @@ useEffect(() => {
     }
   };
 
-  fetchData();
-}, [selectedClubId]); // 🔁 refetches when club changes
+  if (typeof window !== "undefined") {
+    fetchData();
+  }
+}, []);
+
 
 
   const approveMember = async (memberId) => {
