@@ -90,11 +90,11 @@ export default function DashboardPage() {
             {banners.map((banner, idx) => {
               // Assign span styles manually or based on index
               const spanStyles = [
-                "col-span-5 row-span-2", // Large left banner
-                "col-span-3 row-span-2", // Large right banner
-                "col-span-2 row-span-2", // Small
-                "col-span-4 row-span-2", // Small
-                "col-span-2 row-span-2", // Small
+                "col-span-5 row-span-1", // Large left banner
+                "col-span-3 row-span-1", // Large right banner
+                "col-span-2 row-span-1", // Small
+                "col-span-4 row-span-1", // Small
+                "col-span-2 row-span-1", // Small
               ];
 
               return (
