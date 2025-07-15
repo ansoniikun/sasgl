@@ -63,7 +63,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <header className="flex justify-between items-center px-6 py-4 ">
+        <header className="flex justify-between items-center px-6 py-4">
           <h1 className="text-xl font-semibold">Dashboard</h1>
           <div className="flex gap-4 items-center">
             <select className="border px-3 py-1 rounded text-sm">
@@ -86,7 +86,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-8 gap-4 auto-rows-[250px]">
+          <div className="grid grid-cols-8 gap-5 auto-rows-[255px]">
             {banners.map((banner, idx) => {
               // Assign span styles manually or based on index
               const spanStyles = [
@@ -100,14 +100,14 @@ export default function DashboardPage() {
               return (
                 <div
                   key={idx}
-                  className={`rounded-xl overflow-hidden shadow bg-white ${
+                  className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${
                     spanStyles[idx] || "col-span-2 row-span-1"
                   }`}
                 >
                   <img
                     src={banner.src}
                     alt={banner.alt}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-xl"
                   />
                 </div>
               );
