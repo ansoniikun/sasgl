@@ -125,6 +125,19 @@ const ClubDashboardNav = () => {
               {link.name}
             </Link>
           ))}
+                    {userClubs.length > 0 &&
+            userClubs.map((club) => (
+              <button
+                key={club.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  handleClubSelect(club.id);
+                }}
+                className="py-2 text-gray-800 hover:text-dark-gold transition w-full text-center uppercase border-b border-gray-300"
+              >
+                {club.name} Dashboard
+              </button>
+            ))}
           <button
             onClick={() => {
               setIsOpen(false);
