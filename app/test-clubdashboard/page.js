@@ -86,7 +86,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-8 gap-4 auto-rows-[150px]">
+          <div className="grid grid-cols-8 gap-4 auto-rows-[250px]">
             {banners.map((banner, idx) => {
               // Assign span styles manually or based on index
               const spanStyles = [
