@@ -63,7 +63,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <header className="flex justify-between items-center px-6 py-4 bg-white shadow">
+        <header className="flex justify-between items-center px-6 py-4 ">
           <h1 className="text-xl font-semibold">Dashboard</h1>
           <div className="flex gap-4 items-center">
             <select className="border px-3 py-1 rounded text-sm">
