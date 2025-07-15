@@ -26,11 +26,12 @@ export default function DashboardPage() {
             <div className="p-6">
               <img src="/logo.jpg" alt="Logo" className="w-40 rounded-xl" />
             </div>
+            <div className="mt-4 px-4 text-xs text-gray-500">MENU</div>
             <nav className="space-y-1 px-4">
               {menuItems.map((item) => (
                 <button
                   key={item}
-                  className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 text-left w-full text-sm font-medium text-gray-800"
+                  className="flex items-center gap-2  py-2 rounded hover:bg-gray-100 text-left w-full text-sm text-gray-800"
                 >
                   {item}
                 </button>
