@@ -33,7 +33,7 @@ export default function DashboardPage() {
             {menuItems.map((item) => (
               <button
                 key={item}
-                className="flex items-center gap-2  py-2 rounded hover:bg-gray-100 text-left w-full text-sm text-gray-800"
+                className="flex items-center gap-2 font-medium py-2 rounded hover:bg-gray-100 text-left w-full text-sm text-gray-800"
               >
                 {item}
               </button>
@@ -46,7 +46,7 @@ export default function DashboardPage() {
             {accountItems.map((item) => (
               <button
                 key={item}
-                className="w-full text-left text-sm py-2 hover:bg-gray-100"
+                className="w-full text-left text-sm py-2 font-medium hover:bg-gray-100"
               >
                 {item}
               </button>
