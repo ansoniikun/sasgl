@@ -26,7 +26,7 @@ export default function DashboardPage() {
             <div className="p-6">
               <img src="/logo.jpg" alt="Logo" className="w-40 rounded-xl" />
             </div>
-            <div className="mt-4 px-4 text-xs text-gray-500">MENU</div>
+            <div className="mt-4 px-4 text-xs font-semibold text-gray-500">MENU</div>
             <nav className="space-y-1 px-4">
               {menuItems.map((item) => (
                 <button
@@ -37,7 +37,7 @@ export default function DashboardPage() {
                 </button>
               ))}
             </nav>
-            <div className="mt-4 px-4 text-xs text-gray-500">ACCOUNT PAGES</div>
+            <div className="mt-4 px-4 text-xs font-medium text-gray-500">ACCOUNT PAGES</div>
             <nav className="space-y-1 px-4 mt-1">
               {accountItems.map((item) => (
                 <button
