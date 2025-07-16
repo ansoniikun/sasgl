@@ -16,12 +16,15 @@ export default function DashboardPage() {
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const [approvingIds, setApprovingIds] = useState(new Set());
   const [profilePicUrls, setProfilePicUrls] = useState({});
+  const [leagueData, setLeagueData] = useState({ leaderboard: [] });
+
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
 
   const membersPerPage = 12;
+  const leaderboardPerPage = 12;
 
   const menuItems = [
     "Dashboard",
@@ -95,6 +98,15 @@ export default function DashboardPage() {
           })
         );
         setProfilePicUrls(urls);
+
+        const leagueRes = await fetch(
+          `${API_BASE_URL}/api/clubs/league/${club.id}`,
+          { headers }
+        );
+        const league = leagueRes.ok
+          ? await leagueRes.json()
+          : { leaderboard: [] };
+        setLeagueData(league);
 
         if (club.logo_url) {
           try {
@@ -194,10 +206,10 @@ export default function DashboardPage() {
               <button
                 key={item}
                 onClick={() => setActiveTab(item)}
-                className={`flex items-center gap-2 font-medium py-2 rounded text-left w-full text-sm ${
+                className={`flex items-center gap-2 font-medium  py-2 rounded text-left w-full text-sm ${
                   activeTab === item
-                    ? "bg-dark-green text-white"
-                    : "text-gray-800 hover:bg-gray-100"
+                    ? "bg-dark-green text-white px-4"
+                    : "text-gray-800 hover:bg-gray-100 hover:px-3"
                 }`}
               >
                 {item}
@@ -213,6 +225,18 @@ export default function DashboardPage() {
               <button
                 key={item}
                 className="w-full text-left text-sm py-2 font-medium hover:bg-gray-100"
+                onClick={() => {
+                  if (item === "Edit Club") {
+                    if (clubData?.id) {
+                      router.push(`/edit-club?club=${clubData.id}`);
+                    } else {
+                      alert("Club data not loaded.");
+                    }
+                  } else if (item === "Log out") {
+                    localStorage.removeItem("token");
+                    router.push("/login");
+                  }
+                }}
               >
                 {item}
               </button>
@@ -246,13 +270,13 @@ export default function DashboardPage() {
           {activeTab === "Dashboard" && (
             <>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white shadow rounded p-4">
+                <div className="bg-white shadow rounded-xl p-4">
                   <p className="text-sm text-gray-500">Total Members</p>
                   <p className="text-lg font-bold text-dark-green">
                     {members.length} Players
                   </p>
                 </div>
-                <div className="bg-white shadow rounded p-4">
+                <div className="bg-white shadow rounded-xl p-4">
                   <p className="text-sm text-gray-500">Total Events Hosted</p>
                   <p className="text-lg font-bold text-dark-green">
                     {clubEvents.length} Games
@@ -432,19 +456,107 @@ export default function DashboardPage() {
           {activeTab === "Club Events" && (
             <div className="bg-white rounded-xl shadow-md p-4">
               <h2 className="text-lg font-bold mb-4">Club Events</h2>
-              <ul className="space-y-2">
-                {clubEvents.map((event) => (
-                  <li key={event.id} className="border p-3 rounded">
-                    <p className="text-dark-green font-semibold">
-                      {event.name}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {new Date(event.start_date).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-600">{event.description}</p>
-                  </li>
-                ))}
-              </ul>
+            </div>
+          )}
+          {activeTab === "Leaderboard" && (
+            <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
+              <h2 className="text-lg font-bold mb-4">Leaderboard</h2>
+              <table className="w-full text-sm table-auto">
+                <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
+                  <tr>
+                    <th className="p-3">#</th>
+                    <th className="p-3">Player Name</th>
+                    <th className="p-3">Game 1</th>
+                    <th className="p-3">Game 2</th>
+                    <th className="p-3">Game 3</th>
+                    <th className="p-3">Game 4</th>
+                    <th className="p-3">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leagueData.leaderboard
+                    .slice(
+                      (currentPage - 1) * leaderboardPerPage,
+                      currentPage * leaderboardPerPage
+                    )
+                    .map((player, index) => (
+                      <tr
+                        key={player.user_id}
+                        className="hover:bg-gray-50 text-ash-gray"
+                      >
+                        <td className="p-3">
+                          {(currentPage - 1) * leaderboardPerPage + index + 1}
+                        </td>
+                        <td className="p-3 capitalize">{player.name}</td>
+                        {[0, 1, 2, 3].map((i) => (
+                          <td key={i} className="p-3">
+                            {player.scores[i] !== undefined
+                              ? player.scores[i]
+                              : "-"}
+                          </td>
+                        ))}
+                        <td className="p-3 font-semibold">
+                          {player.scores.reduce((sum, s) => sum + s, 0)}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+
+              <div className="flex justify-center items-center py-4 space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+                >
+                  Prev
+                </button>
+
+                {Array.from(
+                  {
+                    length: Math.ceil(
+                      leagueData.leaderboard.length / leaderboardPerPage
+                    ),
+                  },
+                  (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`px-3 py-1 rounded text-sm ${
+                        currentPage === i + 1
+                          ? "bg-dark-green text-white"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  )
+                )}
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      Math.min(
+                        prev + 1,
+                        Math.ceil(
+                          leagueData.leaderboard.length / leaderboardPerPage
+                        )
+                      )
+                    )
+                  }
+                  disabled={
+                    currentPage ===
+                    Math.ceil(
+                      leagueData.leaderboard.length / leaderboardPerPage
+                    )
+                  }
+                  className="px-3 py-1 bg-gray-200 text-sm rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </main>
