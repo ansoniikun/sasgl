@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [clubData, setClubData] = useState(null);
   const [members, setMembers] = useState([]);
   const [clubEvents, setClubEvents] = useState([]);
+  const [userClubs, setUserClubs] = useState([]);
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const [approvingIds, setApprovingIds] = useState(new Set());
@@ -59,6 +60,14 @@ export default function DashboardPage() {
       const headers = { Authorization: `Bearer ${token}` };
 
       try {
+        const clubsRes = await fetch(`${API_BASE_URL}/api/clubs/myclubs`, {
+          headers,
+        });
+        if (clubsRes.ok) {
+          const userClubsData = await clubsRes.json();
+          setUserClubs(userClubsData);
+        }
+
         const [userRes, clubRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/users/me`, { headers }),
           fetch(`${API_BASE_URL}/api/clubs/${clubId}`, { headers }),
@@ -258,9 +267,24 @@ export default function DashboardPage() {
         <header className="flex justify-between items-center px-6 py-4">
           <h1 className="text-xl font-semibold">Dashboard</h1>
           <div className="flex gap-4 items-center">
-            <select className="border px-3 py-1 rounded text-sm">
-              <option>{clubData?.name || "Loading..."}</option>
+            <select
+              className="border px-3 py-1 rounded text-sm"
+              value={clubData?.id || ""}
+              onChange={(e) => {
+                const selectedId = e.target.value;
+                window.location.href = `/test-clubdashboard?club=${selectedId}`;
+              }}
+            >
+              <option disabled value="">
+                Select a Club
+              </option>
+              {userClubs.map((club) => (
+                <option key={club.id} value={club.id}>
+                  {club.name}
+                </option>
+              ))}
             </select>
+
             <span className="material-icons text-gray-600">notifications</span>
           </div>
         </header>
