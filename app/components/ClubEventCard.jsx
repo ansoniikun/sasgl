@@ -1,8 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, ArrowRight } from "lucide-react";
 import EditEventModal from "./EventEditModal";
 import { API_BASE_URL } from "../lib/config";
+import { useRouter } from "next/navigation";
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
@@ -23,17 +24,22 @@ const calculateStatus = (startDate) => {
   today.setHours(0, 0, 0, 0);
   start.setHours(0, 0, 0, 0);
 
-  if (start.getTime() === today.getTime() || start.getTime() < today.getTime()) {
+  if (
+    start.getTime() === today.getTime() ||
+    start.getTime() < today.getTime()
+  ) {
     return "Active";
   } else {
     return "Upcoming";
   }
 };
 
-const ClubEventCard = ({ event }) => {
+const ClubEventCard = ({ event, clubId }) => {
   const eventStatus = calculateStatus(event.start_date);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
@@ -43,63 +49,104 @@ const ClubEventCard = ({ event }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // adjust as needed
         },
       });
-  
+
       if (!res.ok) {
         const error = await res.json();
         throw new Error(error?.error || "Delete failed");
       }
-  
+
       alert("Event deleted successfully.");
       setShowDeleteConfirm(false);
-      window.location.reload(); 
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert("Failed to delete event.");
     }
   };
-  
+
+  const handleViewDetails = async (id, status) => {
+    if (status === "upcoming") return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/leagues/${id}/authorized`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.authorized) {
+        router.push(`/leagues/${id}`);
+      } else {
+        setShowUnauthorizedPopup(true);
+      }
+    } catch (err) {
+      console.error("Authorization check failed:", err);
+      setShowUnauthorizedPopup(true);
+    }
+  };
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow relative">
+      <div className="bg-white rounded-2xl border border-white hover:shadow-lg transition-shadow relative cursor-pointer">
         <div className="p-6">
           <div className="flex justify-between items-start">
-            <h2 className="text-xl font-bold mb-2">
-              {event.name.length > 21 ? `${event.name.slice(0, 21)}...` : event.name}
+            <h2 className="text-xl font-medium mb-2n text-gray-800">
+              {event.name.length > 21
+                ? `${event.name.slice(0, 21)}...`
+                : event.name}
             </h2>
             <span
-              className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(
+              className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusColor(
                 eventStatus
               )}`}
             >
               {eventStatus}
             </span>
           </div>
-          <div className="mt-1 mb-3">
-            <span className="text-sm font-medium text-gray-700">{event.type}</span>
-          </div>
-          <div className="mt-4 space-y-2">
-            <p className="text-gray-600">
-              <span className="font-semibold">When:</span>{" "}
-              {new Date(event.start_date).toLocaleDateString()}
-            </p>
-            <p className="text-gray-600">
-              <span className="font-semibold">Description:</span> {event.description}
+          <div className="mt-1 space-y-2 text-gray-400 text-sm">
+            {/* League and Date Row */}
+            <div className="flex justify-between items-center ">
+              <span>{event.type || "N/A"}</span>
+              <span>{new Date(event.start_date).toLocaleDateString()}</span>
+            </div>
+
+            {/* Description */}
+            <p className="">
+              <span className="">Description:</span> {event.description}
             </p>
           </div>
 
-          <div className="flex gap-2 mt-4">
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="text-green-600 cursor-pointer"
+                title="Edit Event"
+              >
+                <Pencil className="h-4" />
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="text-red-500 cursor-pointer"
+                title="Delete Event"
+              >
+                <Trash className="h-4" />
+              </button>
+            </div>
+
+            {/* Arrow on the right */}
             <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center text-sm uppercase text-white bg-dark-green px-2 py-1 rounded cursor-pointer font-semibold"
+              onClick={() =>
+                handleViewDetails(event.id, eventStatus.toLowerCase())
+              }
+              className="text-blue-400  transition-colors cursor-pointer"
+              title="View Details"
             >
-              <Pencil className="w-4 h-4 mr-1" /> Edit
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center text-sm uppercase text-white bg-ash-gray hover:bg-red-700 px-2 py-1 font-semibold rounded cursor-pointer"
-            >
-              <Trash className="w-4 h-4 mr-1" /> Delete
+              <span className="flex items-center">
+                View <ArrowRight className="h-5 w-5" />
+              </span>
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@
   --dark-green: #3c482b;
   --ash-gray: #525252;
   --lumo-green: #54d807;
+  --brown-gray: #d9d9d9;
 }
 
 @theme inline {
@@ -17,6 +18,7 @@
   --color-pale-green: var(--pale-green);
   --color-ash-gray: var(--ash-gray);
   --color-lumo-green: var(--lumo-green);
+  --color-brown-gray: var(--brown-gray);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

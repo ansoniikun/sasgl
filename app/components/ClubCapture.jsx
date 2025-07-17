@@ -2,35 +2,11 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../lib/config";
 
-const ClubCapture = () => {
-  const [clubId, setClubId] = useState(null);
+const ClubCapture = ({ clubId }) => {
   const [events, setEvents] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState("");
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
-
-  // Get user's club ID
-  useEffect(() => {
-    const fetchClub = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return console.error("No token found");
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/clubs/myclub`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) throw new Error("Failed to fetch club");
-        const data = await res.json();
-        setClubId(data.id);
-      } catch (error) {
-        console.error("Failed to fetch club", error);
-      }
-    };
-
-    fetchClub();
-  }, []);
 
   // Fetch events for the club
   useEffect(() => {
@@ -116,13 +92,16 @@ const ClubCapture = () => {
       alert("Scores submitted successfully!");
 
       // Refetch updated leaderboard
-      const leaderboardRes = await fetch(`${API_BASE_URL}/api/clubs/league/${clubId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const leaderboardRes = await fetch(
+        `${API_BASE_URL}/api/clubs/league/${clubId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const updatedLeagueData = await leaderboardRes.json();
-      
+
       // Update cache
       const cached = sessionStorage.getItem("clubDashboardData");
       if (cached) {
@@ -130,14 +109,14 @@ const ClubCapture = () => {
         parsed.leagueData = updatedLeagueData;
         sessionStorage.setItem("clubDashboardData", JSON.stringify(parsed));
       }
-      
+
       // Reset form
       e.target.reset();
       setSelectedEventId("");
       setSelectedPlayerId("");
-      
+
       // Optionally reload if needed, but no stale data now
-      window.location.reload();      
+      window.location.reload();
     } catch (err) {
       console.error("Submission failed:", err);
       alert("Failed to submit stats.");
@@ -145,10 +124,8 @@ const ClubCapture = () => {
   };
 
   return (
-    <div className="lg:ml-[25vw] lg:mr-[3vw] mt-6 bg-white shadow-md rounded-lg p-5 max-w-5xl">
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">
-        Capture Score
-      </h2>
+    <div className=" mt-6 bg-white shadow-md rounded-xl p-8 pb-10 ">
+      <h2 className="text-xl font-sm text-gray-700 mb-2">Score Card</h2>
       <form
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1"
         onSubmit={handleSubmit}
@@ -156,14 +133,14 @@ const ClubCapture = () => {
         {/* Event */}
         <div className="flex flex-col">
           <label htmlFor="event" className="font-medium text-gray-700">
-            Event<span className="text-red-500">*</span>
+            Club Event<span className="text-red-500">*</span>
           </label>
           <select
             name="event"
             required
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+            className="border border-gray-300 rounded px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
           >
             <option value="">Select an event</option>
             {events.map((event) => (
@@ -184,7 +161,7 @@ const ClubCapture = () => {
             required
             value={selectedPlayerId}
             onChange={(e) => setSelectedPlayerId(e.target.value)}
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
+            className="border border-gray-300 rounded px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
           >
             <option value="">Select a player</option>
             {participants.map((p) => (
@@ -204,7 +181,7 @@ const ClubCapture = () => {
             type="number"
             name="points"
             placeholder="0"
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+            className="border border-gray-300 rounded px-4 py-2 mt-2 placeholder:text-sm"
           />
         </div>
 
@@ -217,7 +194,7 @@ const ClubCapture = () => {
             type="number"
             name="birdies"
             placeholder="0"
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+            className="border border-gray-300 rounded px-4 py-2 mt-2 placeholder:text-sm"
           />
         </div>
 
@@ -230,7 +207,7 @@ const ClubCapture = () => {
             type="number"
             name="strokes"
             placeholder="0"
-            className="border border-gray-300 rounded px-4 py-1 mt-0.5 placeholder:text-sm"
+            className="border border-gray-300 rounded px-4 py-2 mt-2 placeholder:text-sm"
           />
         </div>
 
@@ -239,13 +216,13 @@ const ClubCapture = () => {
           <button
             type="button"
             onClick={() => setSelectedEventId("")}
-            className="bg-ash-gray text-white font-semibold px-6 py-2 rounded-md"
+            className="bg-red-500 text-white font-medium px-6 py-2 rounded-md"
           >
-            Cancel
+            Reset
           </button>
           <button
             type="submit"
-            className="bg-dark-green text-white font-semibold px-6 py-2 rounded-md"
+            className="bg-green-800 text-white font-medium px-6 py-2 rounded-md"
           >
             Submit Scores
           </button>
