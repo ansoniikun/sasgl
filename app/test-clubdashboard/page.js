@@ -741,7 +741,7 @@ export default function DashboardPage() {
           )}
         </main>
 
-        <footer className="text-xs text-gray-500 py-4 bg-gray-100">
+        <footer className="text-xs text-gray-500 py-4 bg-gray-50">
           <div className="flex justify-between items-center px-6 mx-auto">
             <span>© 2025 Social Golf League</span>
             <div className="flex gap-6">
