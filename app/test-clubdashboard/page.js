@@ -246,7 +246,7 @@ export default function DashboardPage() {
             {accountItems.map((item) => (
               <button
                 key={item.label}
-                className="flex items-center gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
+                className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
                 onClick={() => {
                   if (item.label === "Edit Club") {
                     if (clubData?.id) {
