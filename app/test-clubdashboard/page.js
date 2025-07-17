@@ -20,8 +20,8 @@ export default function DashboardPage() {
   const [profilePicUrls, setProfilePicUrls] = useState({});
   const [leagueData, setLeagueData] = useState({ leaderboard: [] });
   const [selectedClubId, setSelectedClubId] = useState(null);
-  const [membersPerPage, setMembersPerPage] = useState(12);
-  const [leaderboardPerPage, setLeaderboardPerPage] = useState(12);
+  const [membersPerPage, setMembersPerPage] = useState(10);
+  const [leaderboardPerPage, setLeaderboardPerPage] = useState(10);
 
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
