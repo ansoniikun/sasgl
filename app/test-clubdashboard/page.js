@@ -601,7 +601,7 @@ export default function DashboardPage() {
                   No events available for this club.
                 </p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {clubEvents.map((event) => (
                     <ClubEventCard
                       key={event.id}
