@@ -399,7 +399,9 @@ export default function DashboardPage() {
 
           {activeTab === "Club Members" && (
             <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-              <h2 className="text-lg font-semibold mb-4">Club Members</h2>
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">
+                Club Members
+              </h2>
               <div className="flex items-center gap-2">
                 <label
                   htmlFor="membersPerPage"
@@ -616,7 +618,9 @@ export default function DashboardPage() {
 
           {activeTab === "Leaderboard" && (
             <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-              <h2 className="text-lg font-sm mb-4">Club Leaderboard</h2>
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">
+                Club Leaderboard
+              </h2>
               <div className="flex items-center gap-2">
                 <label
                   htmlFor="membersPerPage"
