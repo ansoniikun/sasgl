@@ -8,6 +8,7 @@ import { storage } from "../lib/firebase";
 import { API_BASE_URL } from "../lib/config";
 import ClubCapture from "../components/ClubCapture";
 import ClubEventCard from "../components/ClubEventCard";
+import CreateClubEventModal from "../components/CreateClubEvents";
 
 export default function DashboardPage() {
   const [clubData, setClubData] = useState(null);
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [selectedClubId, setSelectedClubId] = useState(null);
   const [membersPerPage, setMembersPerPage] = useState(10);
   const [leaderboardPerPage, setLeaderboardPerPage] = useState(10);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -295,7 +297,7 @@ export default function DashboardPage() {
               </div>
               <h1 className="text-sm">/ Dashboard</h1>
             </div>
-            <span className="text-ash-gray mt-1">{activeTab}</span>
+            <span className="text-ash-gray mt-1 font-medium">{activeTab}</span>
           </div>
 
           <div className="flex gap-4 items-center">
@@ -569,10 +571,18 @@ export default function DashboardPage() {
           )}
 
           {activeTab === "Club Events" && (
-            <div className=" rounded-xl ">
-              {/* <h2 className="text-lg font-bold mb-4">Club Events</h2> */}
+            <div className="rounded-xl">
+              {/* Create Event Button */}
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-4 py-2 bg-dark-green text-white rounded-lg shadow"
+                >
+                  Create Club Event
+                </button>
+              </div>
 
-              {/* First two images from banners */}
+              {/* Banners */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {banners.slice(0, 2).map((banner, idx) => (
                   <div key={idx} className="rounded-xl overflow-hidden shadow">
@@ -761,6 +771,15 @@ export default function DashboardPage() {
           </div>
         </footer>
       </div>
+      {showCreateModal && (
+        <CreateClubEventModal
+          clubId={clubData?.id}
+          onEventCreated={(newEvent) =>
+            setClubEvents((prev) => [...prev, newEvent])
+          }
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
     </div>
   );
 }

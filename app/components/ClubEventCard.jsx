@@ -92,9 +92,9 @@ const ClubEventCard = ({ event, clubId }) => {
       <div className="bg-white rounded-2xl border border-white hover:shadow-lg transition-shadow relative cursor-pointer">
         <div className="p-6">
           <div className="flex justify-between items-start">
-            <h2 className="text-xl font-medium mb-2n text-gray-800">
+            <h2 className="text-lg font-medium mb-2n text-gray-800">
               {event.name.length > 21
-                ? `${event.name.slice(0, 21)}...`
+                ? `${event.name.slice(0, 19)}...`
                 : event.name}
             </h2>
             <span

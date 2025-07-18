@@ -43,7 +43,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
 
       if (res.ok) {
         const newEvent = await res.json();
-      
+
         // Update local cache
         const cached = sessionStorage.getItem("clubDashboardData");
         if (cached) {
@@ -51,7 +51,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
           parsed.clubEvents = [...parsed.clubEvents, newEvent];
           sessionStorage.setItem("clubDashboardData", JSON.stringify(parsed));
         }
-      
+
         onEventCreated(newEvent);
         onClose();
         window.location.reload();
@@ -67,9 +67,9 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Create New Club Event</h2>
+        <h2 className="text-xl font-medium mb-4">Create New Club Event</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             type="text"
@@ -77,7 +77,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded border-gray-300"
           />
 
           <textarea
@@ -85,13 +85,13 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded border-gray-300"
           />
 
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded border-gray-300"
           >
             <option value="league">League</option>
           </select>
@@ -101,7 +101,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded border-gray-300"
           />
 
           <div className="flex justify-end gap-2">
