@@ -6,6 +6,7 @@ import Image from "next/image";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../lib/firebase";
 import { API_BASE_URL } from "../lib/config";
+import { logout } from "../utils/logout";
 import ClubCapture from "../components/ClubCapture";
 import ClubEventCard from "../components/ClubEventCard";
 import CreateClubEventModal from "../components/CreateClubEvents";
@@ -325,7 +326,7 @@ export default function DashboardPage() {
                 className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
                 onClick={() => {
                   if (item.label === "Log out") {
-                    localStorage.removeItem("token");
+                    logout();
                     router.push("/login");
                   } else if (item.label === "Edit Club") {
                     setActiveTab(item.label);
