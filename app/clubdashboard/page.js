@@ -376,7 +376,7 @@ export default function DashboardPage() {
               value={clubData?.id || ""}
               onChange={(e) => {
                 const selectedId = e.target.value;
-                window.location.href = `/test-clubdashboard?club=${selectedId}`;
+                window.location.href = `/clubdashboard?club=${selectedId}`;
               }}
             >
               <option disabled value="">
