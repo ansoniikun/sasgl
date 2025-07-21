@@ -127,7 +127,7 @@ const ClubCapture = ({ clubId }) => {
     <div className=" mt-6 bg-white shadow-md rounded-xl p-8 pb-10 ">
       <h2 className="text-xl font-semibold text-gray-700 mb-2">Score Card</h2>
       <form
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
         onSubmit={handleSubmit}
       >
         {/* Event */}

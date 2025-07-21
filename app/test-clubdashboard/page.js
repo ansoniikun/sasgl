@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getDownloadURL, ref } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../lib/firebase";
 import { API_BASE_URL } from "../lib/config";
 import ClubCapture from "../components/ClubCapture";
@@ -24,6 +24,8 @@ export default function DashboardPage() {
   const [membersPerPage, setMembersPerPage] = useState(10);
   const [leaderboardPerPage, setLeaderboardPerPage] = useState(10);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const fileInputRef = useRef(null);
+  const [logoFile, setLogoFile] = useState(null);
 
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +33,11 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const menuItems = [
-    { label: "Dashboard", icon: "/clubdash/dashboard.png" },
+    {
+      label: "Dashboard",
+      icon: "/clubdash/dashboard.png",
+      icon_select: "/clubdash/dashboard-select.png",
+    },
     { label: "Club Members", icon: "/clubdash/members.png" },
     { label: "Capture Scores", icon: "/clubdash/scores.png" },
     { label: "Leaderboard", icon: "/clubdash/leaderboard.png" },
@@ -205,6 +211,54 @@ export default function DashboardPage() {
     }
   };
 
+  const handleUpdateClub = async () => {
+    const token = getToken();
+    if (!token) return;
+
+    let uploadedLogo = clubData.logo_url; // default to current logo
+
+    try {
+      // If a new logo file is selected, upload it
+      if (logoFile) {
+        const timestamp = Date.now();
+        const cleanName = (clubData.name || "club").replace(/\s+/g, "");
+        const fileName = `${timestamp}_${cleanName}_${logoFile.name}`;
+        const storageRef = ref(storage, `club_logos/${fileName}`);
+
+        await uploadBytes(storageRef, logoFile);
+        uploadedLogo = fileName;
+      }
+
+      // Send PATCH request to update club details
+      const res = await fetch(`${API_BASE_URL}/api/clubs/${clubData.id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...clubData,
+          logo: uploadedLogo,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Club updated successfully!");
+        // Switch to dashboard tab
+        if (typeof setActiveTab === "function") {
+          setActiveTab("Dashboard");
+        }
+        // Reload page
+        window.location.reload();
+      } else {
+        alert("Failed to update club");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating club");
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans">
       {/* Sidebar */}
@@ -228,7 +282,7 @@ export default function DashboardPage() {
                 }`}
               >
                 <img
-                  src={item.icon}
+                  src={activeTab === item.label ? item.icon_select : item.icon}
                   alt={item.label + " icon"}
                   className={`w-8 h-8 p-2 border rounded-lg ${
                     activeTab === item.label
@@ -250,15 +304,11 @@ export default function DashboardPage() {
                 key={item.label}
                 className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
                 onClick={() => {
-                  if (item.label === "Edit Club") {
-                    if (clubData?.id) {
-                      router.push(`/edit-club?club=${clubData.id}`);
-                    } else {
-                      alert("Club data not loaded.");
-                    }
-                  } else if (item.label === "Log out") {
+                  if (item.label === "Log out") {
                     localStorage.removeItem("token");
                     router.push("/login");
+                  } else if (item.label === "Edit Club") {
+                    setActiveTab(item.label);
                   }
                 }}
               >
@@ -750,6 +800,171 @@ export default function DashboardPage() {
                     Next
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Edit Club" && clubData && (
+            <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+              <h2 className="text-lg font-semibold text-gray-700">Edit Club</h2>
+
+              {/* Club Logo at top with overlay edit */}
+              <div className="flex flex-col items-start space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Club Logo
+                </label>
+
+                <div className="relative group w-60 h-50 border border-gray-300 rounded-lg overflow-hidden">
+                  {logoUrl ? (
+                    <>
+                      <Image
+                        src={logoUrl}
+                        alt="Club Logo"
+                        width={128}
+                        height={128}
+                        className="object-cover w-full h-full"
+                      />
+
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-3 py-1 text-white bg-blue-400 text-sm font-medium rounded-xl shadow cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-60 h-50 border border-gray-300 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                      No Logo
+                    </div>
+                  )}
+                </div>
+
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    if (e.target.files[0]) {
+                      setLogoFile(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Inputs underneath */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Club Name */}
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-600">
+                    Club Name
+                  </label>
+                  <input
+                    type="text"
+                    value={clubData.name || ""}
+                    onChange={(e) =>
+                      setClubData((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-400"
+                  />
+                </div>
+
+                {/* Home Estate */}
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-600">
+                    Home Estate
+                  </label>
+                  <input
+                    type="text"
+                    value={clubData.home_estate || ""}
+                    onChange={(e) =>
+                      setClubData((prev) => ({
+                        ...prev,
+                        home_estate: e.target.value,
+                      }))
+                    }
+                    className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-400"
+                  />
+                </div>
+
+                {/* Country */}
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-600">
+                    Country
+                  </label>
+                  <select
+                    value={clubData.country || ""}
+                    onChange={(e) =>
+                      setClubData((prev) => ({
+                        ...prev,
+                        country: e.target.value,
+                      }))
+                    }
+                    className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-400"
+                  >
+                    <option value="South Africa">South Africa</option>
+                    <option value="USA">USA</option>
+                    <option value="UK">UK</option>
+                    {/* add more */}
+                  </select>
+                </div>
+
+                {/* Established Year */}
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-600">
+                    Established Year
+                  </label>
+                  <select
+                    value={clubData.established_year || ""}
+                    onChange={(e) =>
+                      setClubData((prev) => ({
+                        ...prev,
+                        established_year: e.target.value,
+                      }))
+                    }
+                    className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-400"
+                  >
+                    {Array.from({ length: 50 }, (_, i) => 1980 + i).map(
+                      (year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Description
+                </label>
+                <textarea
+                  value={clubData.description || ""}
+                  onChange={(e) =>
+                    setClubData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-400"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleUpdateClub}
+                  className="px-4 py-2 bg-dark-green text-white rounded-lg cursor-pointer"
+                >
+                  Update
+                </button>
               </div>
             </div>
           )}
