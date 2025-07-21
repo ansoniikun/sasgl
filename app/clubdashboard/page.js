@@ -327,7 +327,6 @@ export default function DashboardPage() {
                 onClick={() => {
                   if (item.label === "Log out") {
                     logout();
-                    router.push("/login");
                   } else if (item.label === "Edit Club") {
                     setActiveTab(item.label);
                   }
