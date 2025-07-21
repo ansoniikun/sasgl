@@ -15,7 +15,6 @@ const JoinClub = () => {
       const token = localStorage.getItem("token");
 
       try {
-        // Fetch both clubs and user requests in parallel
         const [clubsRes, statusesRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/clubs/all`),
           fetch(`${API_BASE_URL}/api/clubs/user-requests`, {
@@ -23,21 +22,32 @@ const JoinClub = () => {
           }),
         ]);
 
-        const [clubsData, statusesData] = await Promise.all([
-          clubsRes.json(),
-          statusesRes.json(),
-        ]);
+        if (!clubsRes.ok) {
+          console.error("Failed to fetch clubs:", await clubsRes.text());
+          return;
+        }
 
-        // Cache Firebase logos
+        if (!statusesRes.ok) {
+          console.error("Failed to fetch statuses:", await statusesRes.text());
+          return;
+        }
+
+        const clubsData = await clubsRes.json();
+        const rawStatuses = await statusesRes.json();
+
+        // Make sure rawStatuses is an array
+        const statusesArray = Array.isArray(rawStatuses)
+          ? rawStatuses
+          : rawStatuses?.data || [];
+
+        // cache logos
         const clubsWithLogos = await Promise.all(
           clubsData.map(async (club) => {
             if (club.logo_url) {
               const cacheKey = `club_logo_${club.id}`;
               const cachedUrl = localStorage.getItem(cacheKey);
 
-              if (cachedUrl) {
-                return { ...club, logo_url: cachedUrl };
-              }
+              if (cachedUrl) return { ...club, logo_url: cachedUrl };
 
               try {
                 const logoRef = ref(storage, `club_logos/${club.logo_url}`);
@@ -53,14 +63,14 @@ const JoinClub = () => {
         );
 
         const statusMap = {};
-        statusesData.forEach((entry) => {
+        statusesArray.forEach((entry) => {
           statusMap[entry.club_id] = entry.status;
         });
 
         setClubs(clubsWithLogos);
         setClubStatuses(statusMap);
       } catch (err) {
-        console.error("Failed to fetch clubs or statuses:", err);
+        console.error("Unexpected fetchData error:", err);
       }
     };
 
