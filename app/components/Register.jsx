@@ -96,7 +96,8 @@ const Register = () => {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Google registration failed");
+      if (!response.ok)
+        throw new Error(data.error || "Google registration failed");
 
       router.push("/dashboard");
     } catch (err) {
@@ -108,7 +109,9 @@ const Register = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
-          <h2 className="text-2xl text-dark-green mb-4">Registration Successful!</h2>
+          <h2 className="text-2xl text-dark-green mb-4">
+            Registration Successful!
+          </h2>
           <p className="text-gray-700">Redirecting to login...</p>
         </div>
       </div>
@@ -119,7 +122,13 @@ const Register = () => {
     <div className="min-h-screen flex">
       {/* Left image */}
       <div className="w-5/6 hidden lg:block relative">
-        <Image src="/register.png" alt="Golf Carts" fill className="object-cover" priority />
+        <Image
+          src="/register.png"
+          alt="Golf Carts"
+          fill
+          className="object-cover"
+          priority
+        />
       </div>
 
       {/* Form */}
@@ -129,8 +138,12 @@ const Register = () => {
             <Image src="/logo.jpg" alt="Logo" width={60} height={60} />
           </div>
 
-          <h2 className="text-4xl font-semibold text-ash-gray">Create Your Account</h2>
-          <p className="text-lg text-gray-400">Sign up to book and track your rounds.</p>
+          <h2 className="text-4xl font-semibold text-ash-gray">
+            Create Your Account
+          </h2>
+          <p className="text-lg text-gray-400">
+            Sign up to book and track your rounds.
+          </p>
 
           <button
             onClick={handleGoogleSignIn}
@@ -151,10 +164,30 @@ const Register = () => {
 
           <form onSubmit={handleRegister} className="space-y-4">
             {[
-              { label: "Full Name", type: "text", field: "name", placeholder: "John Doe" },
-              { label: "Email", type: "email", field: "email", placeholder: "mail@abc.com" },
-              { label: "Phone Number", type: "tel", field: "phoneNumber", placeholder: "+27 71 234 5678" },
-              { label: "Password", type: "password", field: "password", placeholder: "Password" },
+              {
+                label: "Full Name",
+                type: "text",
+                field: "name",
+                placeholder: "John Doe",
+              },
+              {
+                label: "Email",
+                type: "email",
+                field: "email",
+                placeholder: "mail@abc.com",
+              },
+              {
+                label: "Phone Number",
+                type: "tel",
+                field: "phoneNumber",
+                placeholder: "+27 71 234 5678",
+              },
+              {
+                label: "Password",
+                type: "password",
+                field: "password",
+                placeholder: "Password",
+              },
             ].map(({ label, type, field, placeholder }) => (
               <div key={field}>
                 <p className="text-gray-500 mb-0">{label}</p>
@@ -172,15 +205,18 @@ const Register = () => {
             <p className="text-gray-500 mb-0">Select Role</p>
             <select
               value={form.role}
-              onChange={(e) => dispatch({ field: "role", value: e.target.value })}
+              onChange={(e) =>
+                dispatch({ field: "role", value: e.target.value })
+              }
               required
               className="w-full px-4 py-2 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green text-gray-600"
             >
-              <option value="" disabled className="text-gray-300">Select your role</option>
+              <option value="" disabled className="text-gray-300">
+                Select your role
+              </option>
               <option value="player">Player</option>
               <option value="captain">Club Captain</option>
               <option value="chairman">Club Chairman</option>
-              <option value="admin">Admin</option>
             </select>
 
             <button
@@ -194,7 +230,9 @@ const Register = () => {
 
           <p className="text-center text-sm text-gray-400">
             Already have an account?{" "}
-            <Link href="/login" className="text-dark-green font-medium">Sign In</Link>
+            <Link href="/login" className="text-dark-green font-medium">
+              Sign In
+            </Link>
           </p>
         </div>
       </div>
@@ -203,13 +241,19 @@ const Register = () => {
       {showRoleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm space-y-4">
-            <h2 className="text-xl font-semibold text-center">Choose Your Role</h2>
+            <h2 className="text-xl font-semibold text-center">
+              Choose Your Role
+            </h2>
             <select
               value={form.role}
-              onChange={(e) => dispatch({ field: "role", value: e.target.value })}
+              onChange={(e) =>
+                dispatch({ field: "role", value: e.target.value })
+              }
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
             >
-              <option value="" disabled>Select your role</option>
+              <option value="" disabled>
+                Select your role
+              </option>
               <option value="player">Player</option>
               <option value="captain">Club Captain</option>
               <option value="chairman">Club Chairman</option>

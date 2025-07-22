@@ -21,6 +21,8 @@ export default function DashboardPage() {
   const [message, setMessage] = useState(null);
   const [role, setRole] = useState(null);
   const fileInputRef = useRef(null);
+  const [userClubs, setUserClubs] = useState([]);
+  const [selectedClubId, setSelectedClubId] = useState("");
 
   const router = useRouter();
 
@@ -31,7 +33,6 @@ export default function DashboardPage() {
       return;
     }
 
-    // check sessionStorage cache
     const cachedUser = sessionStorage.getItem("userData");
     if (cachedUser) {
       const parsed = JSON.parse(cachedUser);
@@ -42,63 +43,72 @@ export default function DashboardPage() {
         password: "",
       });
       setRole(parsed.role || null);
-
       if (parsed.profile_picture_url) {
         setProfilePicUrl(parsed.profile_picture_url);
       }
-      // no need to fetch if cached
-      return;
+      // ✅ DO NOT RETURN HERE, so fetchUserClubs still runs
+    } else {
+      const fetchUser = async () => {
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            console.error("Failed to fetch user");
+            return;
+          }
+          const userData = await res.json();
+          let url = null;
+          if (userData.profile_picture) {
+            url = userData.profile_picture.startsWith("http")
+              ? userData.profile_picture
+              : await getDownloadURL(
+                  ref(storage, `profile_pictures/${userData.profile_picture}`)
+                );
+          }
+          setProfilePicUrl(url);
+          setProfileData({
+            name: userData.name || "",
+            email: userData.email || "",
+            phone_number: userData.phone_number || "",
+            password: "",
+          });
+          setRole(userData.role || null);
+          sessionStorage.setItem(
+            "userData",
+            JSON.stringify({
+              name: userData.name,
+              email: userData.email,
+              phone_number: userData.phone_number,
+              role: userData.role,
+              profile_picture_url: url,
+            })
+          );
+        } catch (err) {
+          console.error("Error loading user data:", err);
+        }
+      };
+      fetchUser();
     }
 
-    const fetchUser = async () => {
+    // ✅ Always run this, even if cached
+    const fetchUserClubs = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+        const res = await fetch(`${API_BASE_URL}/api/clubs/myclubs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) {
-          console.error("Failed to fetch user");
-          return;
+        if (res.ok) {
+          const clubs = await res.json();
+          console.log("Fetched clubs:", clubs);
+          setUserClubs(clubs);
+        } else {
+          console.error("Failed to fetch clubs", await res.text());
         }
-        const userData = await res.json();
-
-        // get profile picture URL
-        let url = null;
-        if (userData.profile_picture) {
-          url = userData.profile_picture.startsWith("http")
-            ? userData.profile_picture
-            : await getDownloadURL(
-                ref(storage, `profile_pictures/${userData.profile_picture}`)
-              );
-        }
-        setProfilePicUrl(url);
-
-        // set profile form data
-        setProfileData({
-          name: userData.name || "",
-          email: userData.email || "",
-          phone_number: userData.phone_number || "",
-          password: "",
-        });
-
-        setRole(userData.role || null);
-
-        // cache the data
-        sessionStorage.setItem(
-          "userData",
-          JSON.stringify({
-            name: userData.name,
-            email: userData.email,
-            phone_number: userData.phone_number,
-            role: userData.role,
-            profile_picture_url: url,
-          })
-        );
       } catch (err) {
-        console.error("Error loading user data:", err);
+        console.error("Error fetching user clubs:", err);
       }
     };
-
-    fetchUser();
+    fetchUserClubs();
   }, [router]);
 
   function handleProfileChange(e) {
@@ -269,14 +279,6 @@ export default function DashboardPage() {
             ))}
           </nav>
         </div>
-        <div className="p-4">
-          <button
-            className="cursor-pointer w-full bg-dark-green text-white py-4 text-sm rounded-xl"
-            onClick={() => router.push("/clubdashboard")}
-          >
-            Club Dashboard
-          </button>
-        </div>
       </aside>
 
       {/* Main */}
@@ -297,6 +299,27 @@ export default function DashboardPage() {
             <span className="text-ash-gray mt-1 font-medium">{activeTab}</span>
           </div>
           <div className="flex gap-4 items-center">
+            {/* ✅ Add dropdown here */}
+            <select
+              className="border px-3 py-3 rounded-xl text-sm border-gray-300"
+              value={selectedClubId}
+              onChange={(e) => {
+                const clubId = e.target.value;
+                setSelectedClubId(clubId);
+                window.location.href = `/clubdashboard?club=${clubId}`;
+              }}
+            >
+              <option value="" disabled>
+                Select a Club
+              </option>
+              {userClubs.map((club) => (
+                <option key={club.id} value={club.id}>
+                  {club.name}
+                </option>
+              ))}
+            </select>
+
+            {/* existing profile picture code below */}
             {profilePicUrl ? (
               <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
                 <Image
@@ -317,27 +340,33 @@ export default function DashboardPage() {
 
         <main className="p-6 space-y-6 flex-grow">
           {activeTab === "User Dashboard" && (
-            <div className="grid grid-cols-8 gap-5 auto-rows-[255px]">
-              {banners.map((banner, idx) => (
-                <div
-                  key={idx}
-                  className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${
-                    [
-                      "col-span-5",
-                      "col-span-3",
-                      "col-span-2",
-                      "col-span-4",
-                      "col-span-2",
-                    ][idx]
-                  }`}
-                >
-                  <img
-                    src={banner.src}
-                    alt={banner.alt}
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                </div>
-              ))}
+            <div className="space-y-4">
+              <h2 className="text-3xl font-semibold text-gray-700">
+                Welcome, {profileData.name || "User"}
+              </h2>
+
+              <div className="grid grid-cols-8 gap-5 auto-rows-[255px]">
+                {banners.map((banner, idx) => (
+                  <div
+                    key={idx}
+                    className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${
+                      [
+                        "col-span-5",
+                        "col-span-3",
+                        "col-span-2",
+                        "col-span-4",
+                        "col-span-2",
+                      ][idx]
+                    }`}
+                  >
+                    <img
+                      src={banner.src}
+                      alt={banner.alt}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
