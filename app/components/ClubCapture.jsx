@@ -164,11 +164,14 @@ const ClubCapture = ({ clubId }) => {
             className="border border-gray-300 rounded px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-dark-green placeholder:text-sm"
           >
             <option value="">Select a player</option>
-            {participants.map((p) => (
-              <option key={p.user_id} value={p.user_id}>
-                {p.name}
-              </option>
-            ))}
+            {participants
+              .slice() // create a copy so we don't mutate state
+              .sort((a, b) => a.name.localeCompare(b.name)) // sort by name
+              .map((p) => (
+                <option key={p.user_id} value={p.user_id}>
+                  {p.name}
+                </option>
+              ))}
           </select>
         </div>
 

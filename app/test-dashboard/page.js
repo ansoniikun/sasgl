@@ -175,7 +175,7 @@ export default function DashboardPage() {
                   if (item.label === "Log out") {
                     logout();
                   } else if (item.label === "Edit profile") {
-                    router.push("/edit-profile");
+                    setActiveTab("Edit profile");
                   }
                 }}
               >

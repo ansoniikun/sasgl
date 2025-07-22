@@ -280,66 +280,121 @@ export default function DashboardPage() {
     }
   };
 
+  const removeMember = async (memberId) => {
+    const token = getToken();
+    if (!token) return;
+
+    if (!confirm("Are you sure you want to remove this member?")) return;
+
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/clubs/${clubData.id}/members/${memberId}/remove`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        setMembers((prev) => prev.filter((m) => m.id !== memberId));
+        alert("Member removed successfully");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to remove member");
+      }
+    } catch (err) {
+      console.error("Error removing member:", err);
+      alert("An error occurred while removing member");
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans">
       {/* Sidebar */}
       <aside className="w-64 bg-white flex flex-col justify-between">
         <div>
-          <div className="p-6">
-            <img src="/logo.png" alt="Logo" className="w-40 rounded-xl" />
+          <div
+            className="p-6 cursor-pointer"
+            onClick={() => router.push("/dashboard")}
+          >
+            <img src="/logo.png" alt="Logo" className=" w-40 rounded-xl" />
           </div>
           <div className="mt-4 px-4 text-xs font-semibold text-gray-500">
             MENU
           </div>
           <nav className="space-y-1 px-4">
-            {menuItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setActiveTab(item.label)}
-                className={`flex items-center gap-2 font-medium py-2 rounded text-left w-full text-sm cursor-pointer ${
-                  activeTab === item.label
-                    ? " px-4"
-                    : "text-gray-400 hover:px-3"
-                }`}
-              >
-                <img
-                  src={activeTab === item.label ? item.icon_select : item.icon}
-                  alt={item.label + " icon"}
-                  className={`w-8 h-8 p-2 border rounded-lg ${
+            {menuItems
+              .filter((item) => {
+                if (item.label === "Capture Scores") {
+                  return (
+                    currentUserRole === "captain" ||
+                    currentUserRole === "chairman"
+                  );
+                }
+                return true;
+              })
+              .map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => setActiveTab(item.label)}
+                  className={`flex items-center gap-2 font-medium py-2 rounded text-left w-full text-sm cursor-pointer ${
                     activeTab === item.label
-                      ? "border-dark-green bg-dark-green"
-                      : "border-brown-gray bg-brown-gray"
-                  } `}
-                />
-                {item.label}
-              </button>
-            ))}
+                      ? " px-4"
+                      : "text-gray-400 hover:px-3"
+                  }`}
+                >
+                  <img
+                    src={
+                      activeTab === item.label ? item.icon_select : item.icon
+                    }
+                    alt={item.label + " icon"}
+                    className={`w-8 h-8 p-2 border rounded-lg ${
+                      activeTab === item.label
+                        ? "border-dark-green bg-dark-green"
+                        : "border-brown-gray bg-brown-gray"
+                    } `}
+                  />
+                  {item.label}
+                </button>
+              ))}
           </nav>
 
           <div className="mt-4 px-4 text-xs font-medium text-gray-500">
             ACCOUNT PAGES
           </div>
           <nav className="space-y-1 px-4 mt-1">
-            {accountItems.map((item) => (
-              <button
-                key={item.label}
-                className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
-                onClick={() => {
-                  if (item.label === "Log out") {
-                    logout();
-                  } else if (item.label === "Edit Club") {
-                    setActiveTab(item.label);
-                  }
-                }}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.label + " icon"}
-                  className="w-8 h-8 p-2 border border-brown-gray bg-brown-gray rounded-lg"
-                />
-                {item.label}
-              </button>
-            ))}
+            {accountItems
+              .filter((item) => {
+                if (item.label === "Edit Club") {
+                  return (
+                    currentUserRole === "captain" ||
+                    currentUserRole === "chairman"
+                  );
+                }
+                return true;
+              })
+              .map((item) => (
+                <button
+                  key={item.label}
+                  className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
+                  onClick={() => {
+                    if (item.label === "Log out") {
+                      logout();
+                    } else if (item.label === "Edit Club") {
+                      setActiveTab(item.label);
+                    }
+                  }}
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label + " icon"}
+                    className="w-8 h-8 p-2 border border-brown-gray bg-brown-gray rounded-lg"
+                  />
+                  {item.label}
+                </button>
+              ))}
           </nav>
         </div>
         <div className="p-4">
@@ -516,6 +571,8 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {members
+                    .slice() // make a shallow copy so you don't mutate state
+                    .sort((a, b) => a.name.localeCompare(b.name)) // sort alphabetically by name
                     .slice(
                       (currentPage - 1) * membersPerPage,
                       currentPage * membersPerPage
@@ -528,7 +585,6 @@ export default function DashboardPage() {
                         <td className="p-3">
                           {(currentPage - 1) * membersPerPage + index + 1}
                         </td>
-
                         <td className="p-3">
                           <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
                             <Image
@@ -570,6 +626,20 @@ export default function DashboardPage() {
                                 className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
                               >
                                 Reject
+                              </button>
+                            </div>
+                          ) : member.status === "approved" &&
+                            (currentUserRole === "captain" ||
+                              currentUserRole === "chairman") ? (
+                            <div className="flex gap-4 items-center">
+                              <span className="capitalize">
+                                {member.status}
+                              </span>
+                              <button
+                                onClick={() => removeMember(member.id)}
+                                className="px-3 py-1 bg-red-500 text-white rounded-3xl hover:bg-red-600"
+                              >
+                                Remove
                               </button>
                             </div>
                           ) : (
