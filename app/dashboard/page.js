@@ -9,7 +9,7 @@ import { API_BASE_URL } from "../lib/config";
 import { logout } from "../utils/logout";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("User Dashboard");
+  const [activeTab, setActiveTab] = useState("My Dashboard");
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -261,7 +261,7 @@ export default function DashboardPage() {
 
   const menuItems = [
     {
-      label: "User Dashboard",
+      label: "My Dashboard",
       icon: "/dash/dashboard.png",
       icon_select: "/dash/dashboard-select.png",
     },
@@ -270,11 +270,15 @@ export default function DashboardPage() {
       icon: "/dash/join.png",
       icon_select: "/dash/join-select.png",
     },
-    {
-      label: "Create a club",
-      icon: "/dash/create.png",
-      icon_select: "/dash/create-select.png",
-    },
+    ...(role === "captain" || role === "chairman"
+      ? [
+          {
+            label: "Create a club",
+            icon: "/dash/create.png",
+            icon_select: "/dash/create-select.png",
+          },
+        ]
+      : []),
     {
       label: "Host an event",
       icon: "/dash/host.png",
@@ -416,15 +420,21 @@ export default function DashboardPage() {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
-                No Logo
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
+                <Image
+                  src="/default-profile.png"
+                  alt="Club Logo"
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                />
               </div>
             )}
           </div>
         </header>
 
         <main className="p-6 space-y-6 flex-grow">
-          {activeTab === "User Dashboard" && (
+          {activeTab === "My Dashboard" && (
             <div className="space-y-4">
               <h2 className="text-3xl font-semibold text-gray-700">
                 Welcome, {profileData.name || "User"}
@@ -460,7 +470,7 @@ export default function DashboardPage() {
               {/* Top-right cancel button */}
               <div className="flex justify-end">
                 <button
-                  onClick={() => setActiveTab("User Dashboard")}
+                  onClick={() => setActiveTab("My Dashboard")}
                   className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg cursor-pointer hover:bg-gray-400 transition"
                 >
                   Cancel
@@ -500,9 +510,20 @@ export default function DashboardPage() {
                         </div>
                       </>
                     ) : (
-                      <div className="w-60 h-50 border border-gray-300 rounded-lg flex items-center justify-center text-gray-400 text-xs">
-                        No Profile Picture
-                      </div>
+                      <>
+                        <div className="w-60 h-50 border border-gray-300 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                          No Profile Picture
+                        </div>
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-3 py-1 text-white bg-blue-400 text-sm font-medium rounded-xl shadow cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      </>
                     )}
                   </div>
                   {/* Hidden file input */}
@@ -675,6 +696,21 @@ export default function DashboardPage() {
                       </div>
                     );
                   })}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Billing" && (
+            <div className="flex flex-col items-center justify-center mt-10">
+              <div className="relative w-full max-w-[90%] h-[70vh] rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/404.jpg"
+                  alt="Billing Placeholder"
+                  fill
+                  quality={100}
+                  className="object-cover rounded-2xl"
+                  priority
+                />
               </div>
             </div>
           )}

@@ -715,14 +715,17 @@ export default function DashboardPage() {
           {activeTab === "Club Events" && (
             <div className="rounded-xl">
               {/* Create Event Button */}
-              <div className="flex justify-end mb-4">
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="px-4 py-2 bg-dark-green text-white rounded-lg shadow"
-                >
-                  Create Club Event
-                </button>
-              </div>
+              {(currentUserRole === "captain" ||
+                currentUserRole === "chairman") && (
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="px-4 py-2 bg-dark-green text-white rounded-lg shadow"
+                  >
+                    Create Club Event
+                  </button>
+                </div>
+              )}
 
               {/* Banners */}
               <div className="grid grid-cols-2 gap-4 mb-6">
@@ -749,6 +752,7 @@ export default function DashboardPage() {
                       key={event.id}
                       event={event}
                       clubId={clubData?.id}
+                      currentUserRole={currentUserRole}
                     />
                   ))}
                 </div>
@@ -1055,6 +1059,21 @@ export default function DashboardPage() {
                 >
                   Update
                 </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Billing" && (
+            <div className="flex flex-col items-center justify-center mt-10">
+              <div className="relative w-full max-w-[90%] h-[70vh] rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/404.jpg"
+                  alt="Billing Placeholder"
+                  fill
+                  quality={100}
+                  className="object-cover rounded-2xl"
+                  priority
+                />
               </div>
             </div>
           )}

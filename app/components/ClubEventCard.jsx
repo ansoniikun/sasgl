@@ -34,7 +34,7 @@ const calculateStatus = (startDate) => {
   }
 };
 
-const ClubEventCard = ({ event, clubId }) => {
+const ClubEventCard = ({ event, clubId, currentUserRole }) => {
   const eventStatus = calculateStatus(event.start_date);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -119,22 +119,25 @@ const ClubEventCard = ({ event, clubId }) => {
           </div>
 
           <div className="flex justify-between items-center mt-4">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="text-green-600 cursor-pointer"
-                title="Edit Event"
-              >
-                <Pencil className="h-4" />
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-500 cursor-pointer"
-                title="Delete Event"
-              >
-                <Trash className="h-4" />
-              </button>
-            </div>
+            {(currentUserRole === "captain" ||
+              currentUserRole === "chairman") && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="text-green-600 cursor-pointer"
+                  title="Edit Event"
+                >
+                  <Pencil className="h-4" />
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-red-500 cursor-pointer"
+                  title="Delete Event"
+                >
+                  <Trash className="h-4" />
+                </button>
+              </div>
+            )}
 
             {/* Arrow on the right */}
             <button
