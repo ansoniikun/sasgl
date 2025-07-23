@@ -109,7 +109,13 @@ const ClubEventCard = ({ event, clubId, currentUserRole }) => {
             {/* League and Date Row */}
             <div className="flex justify-between items-center ">
               <span>{event.type || "N/A"}</span>
-              <span>{new Date(event.start_date).toLocaleDateString()}</span>
+              <span>
+                {new Date(event.start_date).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </span>
             </div>
 
             {/* Description */}

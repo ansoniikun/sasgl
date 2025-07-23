@@ -280,12 +280,12 @@ export default function DashboardPage() {
         ]
       : []),
     {
-      label: "Host an event",
+      label: "Host A Golf Day",
       icon: "/dash/host.png",
       icon_select: "/dash/host-select.png",
     },
     {
-      label: "Hosted events",
+      label: "Hosted Golf Days",
       icon: "/dash/events.png",
       icon_select: "/dash/events-select.png",
     },
@@ -702,7 +702,7 @@ export default function DashboardPage() {
 
           {activeTab === "Billing" && (
             <div className="flex flex-col items-center justify-center mt-10">
-              <div className="relative w-full max-w-[90%] h-[70vh] rounded-2xl overflow-hidden shadow-lg">
+              <div className="relative w-full max-w-[95vw] h-[90vh]  rounded-2xl overflow-hidden shadow-lg">
                 <Image
                   src="/404.jpg"
                   alt="Billing Placeholder"
