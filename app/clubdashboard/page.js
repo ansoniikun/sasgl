@@ -794,7 +794,7 @@ export default function DashboardPage() {
                   Members
                 </label>
               </div>
-              <table className="w-full text-sm table-auto">
+              <table className="w-full text-sm table-auto min-w-7xl">
                 <thead className="text-left border-b-1 border-b-gray-200 font-normal text-ash-gray">
                   <tr>
                     <th className="p-3 font-medium">ID</th>
