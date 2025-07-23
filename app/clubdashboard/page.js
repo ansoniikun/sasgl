@@ -122,8 +122,12 @@ export default function DashboardPage() {
         const membersData = await membersRes.json();
         const eventsData = await eventsRes.json();
 
+        const sortedEvents = eventsData.sort(
+          (a, b) => new Date(a.start_date) - new Date(b.start_date)
+        );
+
         setMembers(membersData);
-        setClubEvents(eventsData);
+        setClubEvents(sortedEvents);
 
         const urls = {};
         await Promise.all(
