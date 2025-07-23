@@ -702,7 +702,7 @@ export default function DashboardPage() {
 
           {activeTab === "Billing" && (
             <div className="flex flex-col items-center justify-center">
-              <div className="relative w-full max-w-[95vw] h-[80vh]  rounded-2xl overflow-hidden shadow-lg">
+              <div className="relative w-full  h-[75vh]  rounded-2xl overflow-hidden shadow-lg">
                 <Image
                   src="/404.jpg"
                   alt="Billing Placeholder"
