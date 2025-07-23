@@ -290,7 +290,7 @@ export default function DashboardPage() {
       icon_select: "/dash/events-select.png",
     },
     {
-      label: "Billing",
+      label: "Subscriptions",
       icon: "/dash/billing.png",
       icon_select: "/dash/billing-select.png",
     },
@@ -700,12 +700,12 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {activeTab === "Billing" && (
+          {activeTab === "Subscriptions" && (
             <div className="flex flex-col items-center justify-center">
               <div className="relative w-full  h-[75vh]  rounded-2xl overflow-hidden shadow-lg">
                 <Image
                   src="/404.jpg"
-                  alt="Billing Placeholder"
+                  alt="Subscriptions Placeholder"
                   fill
                   quality={100}
                   className="object-cover rounded-2xl"

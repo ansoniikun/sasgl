@@ -60,7 +60,7 @@ export default function DashboardPage() {
       icon_select: "/clubdash/events-select.png",
     },
     {
-      label: "Billing",
+      label: "Subscriptions",
       icon: "/clubdash/billing.png",
       icon_select: "/clubdash/billing-select.png",
     },
@@ -1063,7 +1063,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {activeTab === "Billing" && (
+          {activeTab === "Subscriptions" && (
             <div className="flex flex-col items-center justify-center ">
               <div className="relative w-full  h-[75vh] rounded-2xl overflow-hidden shadow-lg">
                 <Image
