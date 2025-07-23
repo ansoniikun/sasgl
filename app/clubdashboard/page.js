@@ -74,9 +74,9 @@ export default function DashboardPage() {
   const banners = [
     { src: "/banners/test-clubdash5.png", alt: "ITU GOLF WEAR" },
     { src: "/banners/test-clubdash1.png", alt: "BMW Golf Cup" },
-    { src: "/banners/test-clubdash2.png", alt: "Swing for a Cause" },
-    { src: "/banners/test-clubdash4.png", alt: "Trusted by the Champion" },
-    { src: "/banners/test-clubdash3.png", alt: "Better Golf" },
+    { src: "/banners/adspace_small.png", alt: "Swing for a Cause" },
+    { src: "/banners/adspace_large.png", alt: "Trusted by the Champion" },
+    { src: "/banners/adspace_small.png", alt: "Better Golf" },
   ];
 
   const getToken = () => localStorage.getItem("token");
@@ -311,9 +311,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-white flex flex-col justify-between">
+      <aside className="w-64 bg-white flex flex-col justify-between h-screen">
         <div>
           <div
             className="p-6 cursor-pointer"
@@ -408,7 +408,7 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen pt-5 px-5">
+      <div className="flex-1 flex flex-col h-screen pt-5 px-5 overflow-y-auto">
         <header className="flex justify-between items-center px-6 py-4">
           <div className="flex flex-col">
             <div className="flex space-x-1 items-center">
