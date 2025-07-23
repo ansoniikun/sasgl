@@ -616,14 +616,14 @@ export default function DashboardPage() {
                               <button
                                 disabled={approvingIds.has(member.id)}
                                 onClick={() => approveMember(member.id)}
-                                className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                className="px-2 py-1 bg-green-200 text-dark-green rounded hover:bg-green-300 disabled:opacity-50"
                               >
                                 Approve
                               </button>
                               <button
                                 disabled={approvingIds.has(member.id)}
                                 onClick={() => rejectMember(member.id)}
-                                className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                                className="px-2 py-1 bg-red-200 text-red-800 rounded hover:bg-red-300 disabled:opacity-50 cursor-pointer"
                               >
                                 Reject
                               </button>
@@ -637,7 +637,7 @@ export default function DashboardPage() {
                               </span>
                               <button
                                 onClick={() => removeMember(member.id)}
-                                className="px-3 py-1 bg-red-500 text-white rounded-3xl hover:bg-red-600"
+                                className="px-3 py-1 bg-red-200 text-red-800 rounded-3xl hover:bg-red-300 cursor-pointer"
                               >
                                 Remove
                               </button>
@@ -799,10 +799,11 @@ export default function DashboardPage() {
                   <tr>
                     <th className="p-3 font-medium">ID</th>
                     <th className="p-3 font-medium">Player Name</th>
-                    <th className="p-3 font-medium">Game 1</th>
-                    <th className="p-3 font-medium">Game 2</th>
-                    <th className="p-3 font-medium">Game 3</th>
-                    <th className="p-3 font-medium">Game 4</th>
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <th key={i} className="p-3 font-medium">{`Game ${
+                        i + 1
+                      }`}</th>
+                    ))}
                     <th className="p-3 font-medium">Total</th>
                   </tr>
                 </thead>
@@ -821,7 +822,7 @@ export default function DashboardPage() {
                           {(currentPage - 1) * leaderboardPerPage + index + 1}
                         </td>
                         <td className="p-3 capitalize">{player.name}</td>
-                        {[0, 1, 2, 3].map((i) => (
+                        {Array.from({ length: 12 }, (_, i) => (
                           <td key={i} className="p-3">
                             {player.scores[i] !== undefined
                               ? player.scores[i]
