@@ -342,7 +342,7 @@ export default function DashboardPage() {
         {/* Mobile Header inside Sidebar */}
         <div className="p-6 flex justify-between items-center lg:hidden">
           <img src="/logo.png" alt="Logo" className="w-32" />
-          <button onClick={() => setIsSidebarOpen(false)}>
+          {/* <button onClick={() => setIsSidebarOpen(false)}>
             <svg
               className="w-6 h-6 text-gray-700"
               fill="none"
@@ -357,7 +357,7 @@ export default function DashboardPage() {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </button> */}
         </div>
 
         {/* Sidebar Content */}
@@ -422,9 +422,22 @@ export default function DashboardPage() {
       {/* Mobile Top Header */}
       <header className="fixed top-0 left-0 w-full flex items-center justify-between px-4 py-6 z-20 bg-white shadow lg:hidden">
         <div className="flex items-center gap-2">
-          <div onClick={() => router.push("/")} className="cursor-pointer">
-            <Image src="/logo.png" alt="Logo" width={120} height={30} />
-          </div>
+          <button onClick={() => setIsSidebarOpen(true)}>
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
           <select
             className="border px-2 py-2 rounded-md text-sm border-gray-300"
             value={selectedClubId}
@@ -467,22 +480,6 @@ export default function DashboardPage() {
               />
             </div>
           )}
-          <button onClick={() => setIsSidebarOpen(true)}>
-            <svg
-              className="w-6 h-6 text-gray-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
         </div>
       </header>
 
@@ -838,9 +835,11 @@ export default function DashboardPage() {
           )}
         </main>
         <footer className="text-xs text-gray-500 py-4 bg-gray-50">
-          <div className="flex justify-between items-center px-6 mx-auto">
-            <span>© 2025 Social Golf League</span>
-            <div className="flex gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 px-6 mx-auto">
+            {/* Hidden on mobile, visible on sm+ */}
+            <span className="hidden sm:block">© 2025 Social Golf League</span>
+
+            <div className="flex gap-4 flex-wrap justify-center sm:justify-start">
               <a href="#" className="hover:underline">
                 About Us
               </a>
