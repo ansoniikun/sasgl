@@ -734,15 +734,14 @@ export default function DashboardPage() {
           {activeTab === "Join a club" && (
             <div className="space-y-6">
               {/* Banner Row */}
-              <div className="grid grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map((_, idx) => (
+              {/* Banner Row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {(isMobile ? [1, 2] : [1, 2, 3, 4]).map((_, idx) => (
                   <div
                     key={idx}
                     className="rounded-2xl overflow-hidden shadow bg-white p-2 flex items-center justify-center"
                   >
                     <div className="relative w-full h-32">
-                      {" "}
-                      {/* adjust h-32 for desired height */}
                       <Image
                         src="/banners/adspace_small.png"
                         alt={`adspace-${idx}`}
@@ -839,7 +838,7 @@ export default function DashboardPage() {
             {/* Hidden on mobile, visible on sm+ */}
             <span className="hidden sm:block">© 2025 Social Golf League</span>
 
-            <div className="flex gap-4 flex-wrap justify-center sm:justify-start">
+            <div className="flex gap-4 justify-center sm:justify-start">
               <a href="#" className="hover:underline">
                 About Us
               </a>
