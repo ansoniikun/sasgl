@@ -68,7 +68,7 @@ const CreateClubEventModal = ({ clubId, onEventCreated, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg">
+      <div className="bg-white p-6 rounded-lg w-[90vw] lg:w-full shadow-lg">
         <h2 className="text-xl font-medium mb-4">Create New Club Event</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
