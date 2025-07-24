@@ -48,8 +48,8 @@ const EditEventModal = ({ event, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-xl p-6">
-        <h2 className="text-lg font-bold mb-4">Edit Event</h2>
+      <div className="bg-white rounded-xl w-[90vw] lg:w-full shadow-lg  max-w-sm p-6">
+        <h2 className="text-lg font-semibold mb-4">Edit Event</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {["name", "type"].map((field) => (
             <input
@@ -58,7 +58,7 @@ const EditEventModal = ({ event, onClose }) => {
               value={formData[field]}
               onChange={handleChange}
               placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-              className="w-full border p-2 rounded"
+              className="w-full border p-2 text-gray-400 rounded border-gray-300"
               required
             />
           ))}
@@ -67,20 +67,20 @@ const EditEventModal = ({ event, onClose }) => {
             value={formData.description}
             onChange={handleChange}
             placeholder="Description"
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded text-gray-400 border-gray-300"
           />
           <input
             type="date"
             name="start_date"
             value={formData.start_date}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full text-gray-400 border-gray-300"
           />
           <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-500 hover:text-black"
+              className="text-gray-500 hover:text-black "
             >
               Cancel
             </button>

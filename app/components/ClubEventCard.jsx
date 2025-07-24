@@ -166,22 +166,22 @@ const ClubEventCard = ({ event, clubId, currentUserRole }) => {
       )}
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-            <h3 className="text-lg font-bold mb-4">Delete Event</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm ">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm  w-[90vw] lg:w-full text-center">
+            <h3 className="text-lg font-semibold mb-4">Delete Event</h3>
             <p className="text-gray-700 mb-6">
               Are you sure you want to delete <strong>{event.name}</strong>?
             </p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                className="bg-gray-300 px-4 py-2 rounded-3xl hover:bg-gray-400"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="bg-red-200 text-red-800 px-4 py-2 rounded-4xl"
               >
                 Yes, Delete
               </button>

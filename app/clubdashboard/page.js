@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const [approvingIds, setApprovingIds] = useState(new Set());
-  const [profilePicUrls, setProfilePicUrls] = useState({});
+  const [logos, setlogos] = useState({});
   const [leagueData, setLeagueData] = useState({ leaderboard: [] });
   const [selectedClubId, setSelectedClubId] = useState(null);
   const [membersPerPage, setMembersPerPage] = useState(10);
@@ -27,11 +27,22 @@ export default function DashboardPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const fileInputRef = useRef(null);
   const [logoFile, setLogoFile] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // Tailwind's `lg`
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const menuItems = [
     {
@@ -143,7 +154,7 @@ export default function DashboardPage() {
             }
           })
         );
-        setProfilePicUrls(urls);
+        setlogos(urls);
 
         const leagueRes = await fetch(
           `${API_BASE_URL}/api/clubs/league/${club.id}`,
@@ -161,7 +172,7 @@ export default function DashboardPage() {
             );
             setLogoUrl(url);
           } catch (err) {
-            console.warn("Error loading logo:", err);
+            console.warn("Error loading logoUrl:", err);
           }
         }
       } catch (err) {
@@ -240,10 +251,10 @@ export default function DashboardPage() {
     const token = getToken();
     if (!token) return;
 
-    let uploadedLogo = clubData.logo_url; // default to current logo
+    let uploadedLogo = clubData.logo_url; // default to current logoUrl
 
     try {
-      // If a new logo file is selected, upload it
+      // If a new logoUrl file is selected, upload it
       if (logoFile) {
         const timestamp = Date.now();
         const cleanName = (clubData.name || "club").replace(/\s+/g, "");
@@ -263,7 +274,7 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({
           ...clubData,
-          logo: uploadedLogo,
+          logoUrl: uploadedLogo,
         }),
       });
 
@@ -317,7 +328,21 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-white flex flex-col justify-between h-screen">
+      {/* Backdrop when sidebar is open on mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`
+  fixed top-0 left-0 z-50 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+  lg:static lg:translate-x-0 lg:flex lg:flex-col
+`}
+      >
         <div>
           <div
             className="p-6 cursor-pointer"
@@ -411,16 +436,80 @@ export default function DashboardPage() {
         </div>
       </aside>
 
+      {/* Mobile Top Header */}
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between px-4 py-6 z-20 bg-white shadow lg:hidden">
+        <div className="flex items-center gap-2">
+          <button onClick={() => setIsSidebarOpen(true)}>
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          <select
+            className="border px-2 py-2 rounded-md text-sm border-gray-300"
+            value={clubData?.id || ""}
+            onChange={(e) => {
+              const clubId = e.target.value;
+              setSelectedClubId(clubId);
+              window.location.href = `/clubdashboard?club=${clubId}`;
+            }}
+          >
+            <option value="" disabled>
+              Select a Club
+            </option>
+            {userClubs.map((club) => (
+              <option key={club.id} value={club.id}>
+                {club.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {logoUrl ? (
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
+              <Image
+                src={logoUrl}
+                alt="Profile"
+                width={36}
+                height={36}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ) : (
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
+              <Image
+                src="/default-profile.png"
+                alt="Default Profile"
+                width={36}
+                height={36}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          )}
+        </div>
+      </header>
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen pt-5 px-5 overflow-y-auto">
-        <header className="flex justify-between items-center px-6 py-4">
+        <header className="hidden lg:flex justify-between items-center px-6 py-4">
           <div className="flex flex-col">
             <div className="flex space-x-1 items-center">
               <div className="relative w-3 h-3">
                 <Image
                   src="/dashnav.png"
                   fill
-                  alt="dash nav logo"
+                  alt="dash nav logoUrl"
                   className="object-cover"
                 />
               </div>
@@ -467,7 +556,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Tabs */}
-        <main className="p-6 space-y-6 flex-grow">
+        <main className="p-6 space-y-6 pt-24 flex-grow">
           {activeTab === "Dashboard" && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -485,30 +574,34 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-8 gap-5 auto-rows-[255px]">
-                {banners.map((banner, idx) => {
-                  const spanStyles = [
-                    "col-span-5 row-span-1",
-                    "col-span-3 row-span-1",
-                    "col-span-2 row-span-1",
-                    "col-span-4 row-span-1",
-                    "col-span-2 row-span-1",
-                  ];
-                  return (
-                    <div
-                      key={idx}
-                      className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${
-                        spanStyles[idx] || "col-span-2 row-span-1"
-                      }`}
-                    >
-                      <img
-                        src={banner.src}
-                        alt={banner.alt}
-                        className="w-full h-full object-cover rounded-xl"
-                      />
-                    </div>
-                  );
-                })}
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-8 auto-rows-[255px]">
+                {(isMobile ? banners.slice(0, 2) : banners).map(
+                  (banner, idx) => {
+                    // Fallback to col-span-1 on mobile, and custom span on lg+
+                    const colSpanClass = isMobile
+                      ? "col-span-1"
+                      : [
+                          "lg:col-span-5",
+                          "lg:col-span-3",
+                          "lg:col-span-2",
+                          "lg:col-span-4",
+                          "lg:col-span-2",
+                        ][idx] || "lg:col-span-2";
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${colSpanClass}`}
+                      >
+                        <img
+                          src={banner.src}
+                          alt={banner.alt}
+                          className="w-full h-full object-cover rounded-xl"
+                        />
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </>
           )}
@@ -592,10 +685,7 @@ export default function DashboardPage() {
                         <td className="p-3">
                           <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
                             <Image
-                              src={
-                                profilePicUrls[member.id] ||
-                                "/default-profile.png"
-                              }
+                              src={logos[member.id] || "/default-profile.png"}
                               alt={`${member.name} profile`}
                               width={32}
                               height={32}
@@ -1085,9 +1175,11 @@ export default function DashboardPage() {
         </main>
 
         <footer className="text-xs text-gray-500 py-4 bg-gray-50">
-          <div className="flex justify-between items-center px-6 mx-auto">
-            <span>© 2025 Social Golf League</span>
-            <div className="flex gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 px-6 mx-auto">
+            {/* Hidden on mobile, visible on sm+ */}
+            <span className="hidden sm:block">© 2025 Social Golf League</span>
+
+            <div className="flex gap-4 justify-center sm:justify-start">
               <a href="#" className="hover:underline">
                 About Us
               </a>
