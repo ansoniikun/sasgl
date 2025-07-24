@@ -29,6 +29,7 @@ const Register = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [registered, setRegistered] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
@@ -188,19 +189,47 @@ const Register = () => {
                 field: "password",
                 placeholder: "Password",
               },
-            ].map(({ label, type, field, placeholder }) => (
-              <div key={field}>
-                <p className="text-gray-500 mb-0">{label}</p>
-                <input
-                  type={type}
-                  placeholder={placeholder}
-                  className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
-                  value={form[field]}
-                  onChange={(e) => dispatch({ field, value: e.target.value })}
-                  required={field !== "email"} // email is optional for Google users
-                />
-              </div>
-            ))}
+            ].map(({ label, type, field, placeholder }) => {
+              if (field === "password") {
+                return (
+                  <div key={field}>
+                    <p className="text-gray-500 mb-0">{label}</p>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder={placeholder}
+                        className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green pr-10"
+                        value={form[field]}
+                        onChange={(e) =>
+                          dispatch({ field, value: e.target.value })
+                        }
+                        required
+                      />
+                      <span
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer select-none"
+                      >
+                        {showPassword ? "Hide" : "Show"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={field}>
+                  <p className="text-gray-500 mb-0">{label}</p>
+                  <input
+                    type={type}
+                    placeholder={placeholder}
+                    className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+                    value={form[field]}
+                    onChange={(e) => dispatch({ field, value: e.target.value })}
+                    required={field !== "email"}
+                  />
+                </div>
+              );
+            })}
 
             <p className="text-gray-500 mb-0">Select Role</p>
             <select

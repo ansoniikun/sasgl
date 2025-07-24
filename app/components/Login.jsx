@@ -15,6 +15,7 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
@@ -140,25 +141,30 @@ const Login = () => {
               />
             </div>
 
-            <div>
-              <p className="text-gray-500 mb-0">Password</p>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 border placeholder:text-sm placeholder-gray-300 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
+                className="w-full px-4 py-2 border placeholder:text-sm placeholder-gray-300 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green pr-10"
               />
+              <span
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer select-none"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </span>
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-400">
+            {/*<div className="flex items-center justify-between text-sm text-gray-400">
               <label className="flex items-center gap-1">
                 <input type="checkbox" className="accent-dark-green" />
                 Remember Me
               </label>
-              {/* <Link href="/forgot-password" className="text-dark-green font-medium">Forgot Password?</Link> */}
-            </div>
+              /* <Link href="/forgot-password" className="text-dark-green font-medium">Forgot Password?</Link>
+            </div>*/}
 
             <button
               type="submit"
