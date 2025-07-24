@@ -230,7 +230,6 @@ const Register = () => {
                 </div>
               );
             })}
-
             <p className="text-gray-500 mb-0">Select Role</p>
             <select
               value={form.role}

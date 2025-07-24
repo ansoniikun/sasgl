@@ -25,6 +25,17 @@ export default function DashboardPage() {
   const [selectedClubId, setSelectedClubId] = useState("");
   const [allClubs, setAllClubs] = useState([]);
   const [joinStatuses, setJoinStatuses] = useState({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // Tailwind's `lg`
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const router = useRouter();
 
@@ -48,7 +59,7 @@ export default function DashboardPage() {
       if (parsed.profile_picture_url) {
         setProfilePicUrl(parsed.profile_picture_url);
       }
-      // ✅ DO NOT RETURN HERE, so fetchUserClubs still runs
+      // DO NOT RETURN HERE, so fetchUserClubs still runs
     } else {
       const fetchUser = async () => {
         try {
@@ -93,7 +104,7 @@ export default function DashboardPage() {
       fetchUser();
     }
 
-    // ✅ Always run this, even if cached
+    // Always run this, even if cached
     const fetchUserClubs = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/clubs/myclubs`, {
@@ -312,67 +323,171 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-white flex flex-col justify-between h-screen">
-        <div>
-          <div className="p-6 cursor-pointer" onClick={() => router.push("/")}>
-            <img src="/logo.png" alt="Logo" className="w-40 rounded-xl" />
+      {/* Backdrop when sidebar is open on mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Responsive Sidebar */}
+      <aside
+        className={`
+  fixed top-0 left-0 z-50 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+  lg:static lg:translate-x-0 lg:flex lg:flex-col
+`}
+      >
+        {/* Mobile Header inside Sidebar */}
+        <div className="p-6 flex justify-between items-center lg:hidden">
+          <img src="/logo.png" alt="Logo" className="w-32" />
+          <button onClick={() => setIsSidebarOpen(false)}>
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Sidebar Content */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="flex justify-center mb-2 lg:block hidden mb-10 ">
+            <img
+              src="/logo.png"
+              alt="Logo"
+              className="w-48 h-auto cursor-pointer "
+              onClick={() => router.push("/")}
+            />
           </div>
-          <div className="mt-4 px-4 text-xs font-semibold text-gray-500">
-            MENU
-          </div>
-          <nav className="space-y-1 px-4">
-            {menuItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setActiveTab(item.label)}
-                className={`flex items-center gap-2 font-medium py-2 rounded text-left w-full text-sm cursor-pointer ${
-                  activeTab === item.label ? "px-4" : "text-gray-400 hover:px-3"
+          <div className="text-xs font-semibold text-gray-500 mb-3">MENU</div>
+          {menuItems.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => {
+                setActiveTab(item.label);
+                setIsSidebarOpen(false); // optional auto-close
+              }}
+              className={`flex items-center gap-2 font-medium py-2 rounded text-left w-full text-sm cursor-pointer ${
+                activeTab === item.label ? "px-4" : "text-gray-400 hover:px-3"
+              }`}
+            >
+              <img
+                src={activeTab === item.label ? item.icon_select : item.icon}
+                alt={`${item.label} icon`}
+                className={`w-8 h-8 p-2 border rounded-lg ${
+                  activeTab === item.label
+                    ? "border-dark-green bg-dark-green"
+                    : "border-brown-gray bg-brown-gray"
                 }`}
-              >
-                <img
-                  src={activeTab === item.label ? item.icon_select : item.icon}
-                  alt={item.label + " icon"}
-                  className={`w-8 h-8 p-2 border rounded-lg ${
-                    activeTab === item.label
-                      ? "border-dark-green bg-dark-green"
-                      : "border-brown-gray bg-brown-gray"
-                  }`}
-                />
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className="mt-4 px-4 text-xs font-medium text-gray-500">
+              />
+              {item.label}
+            </button>
+          ))}
+
+          <div className="mt-6 text-xs font-medium text-gray-500">
             ACCOUNT PAGES
           </div>
-          <nav className="space-y-1 px-4 mt-1">
-            {accountItems.map((item) => (
-              <button
-                key={item.label}
-                className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
-                onClick={() => {
-                  if (item.label === "Log out") {
-                    logout();
-                  } else if (item.label === "Edit Profile") {
-                    setActiveTab("Edit Profile");
-                  }
-                }}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.label + " icon"}
-                  className="w-8 h-8 p-2 border border-brown-gray bg-brown-gray rounded-lg"
-                />
-                {item.label}
-              </button>
-            ))}
-          </nav>
+          {accountItems.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => {
+                if (item.label === "Log out") logout();
+                if (item.label === "Edit Profile") setActiveTab("Edit Profile");
+                setIsSidebarOpen(false);
+              }}
+              className="flex items-center text-gray-400 gap-2 font-medium py-2 text-left w-full text-sm cursor-pointer rounded"
+            >
+              <img
+                src={item.icon}
+                alt={`${item.label} icon`}
+                className="w-8 h-8 p-2 border border-brown-gray bg-brown-gray rounded-lg"
+              />
+              {item.label}
+            </button>
+          ))}
         </div>
       </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col h-screen pt-5 px-5 overflow-y-auto">
-        <header className="flex justify-between items-center px-6 py-4">
+      {/* Mobile Top Header */}
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between px-4 py-6 z-20 bg-white shadow lg:hidden">
+        <div className="flex items-center gap-2">
+          <div onClick={() => router.push("/")} className="cursor-pointer">
+            <Image src="/logo.png" alt="Logo" width={120} height={30} />
+          </div>
+          <select
+            className="border px-2 py-2 rounded-md text-sm border-gray-300"
+            value={selectedClubId}
+            onChange={(e) => {
+              const clubId = e.target.value;
+              setSelectedClubId(clubId);
+              window.location.href = `/clubdashboard?club=${clubId}`;
+            }}
+          >
+            <option value="" disabled>
+              Select a Club
+            </option>
+            {userClubs.map((club) => (
+              <option key={club.id} value={club.id}>
+                {club.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {profilePicUrl ? (
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
+              <Image
+                src={profilePicUrl}
+                alt="Profile"
+                width={36}
+                height={36}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ) : (
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
+              <Image
+                src="/default-profile.png"
+                alt="Default Profile"
+                width={36}
+                height={36}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          )}
+          <button onClick={() => setIsSidebarOpen(true)}>
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div className="flex-1 flex flex-col h-screen pt-20 lg:pt-5 px-5 overflow-y-auto">
+        <header className="hidden lg:flex justify-between items-center px-6 py-4">
           <div className="flex flex-col">
             <div className="flex space-x-1 items-center">
               <div className="relative w-3 h-3">
@@ -440,27 +555,34 @@ export default function DashboardPage() {
                 Welcome, {profileData.name || "User"}
               </h2>
 
-              <div className="grid grid-cols-8 gap-5 auto-rows-[255px]">
-                {banners.map((banner, idx) => (
-                  <div
-                    key={idx}
-                    className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${
-                      [
-                        "col-span-5",
-                        "col-span-3",
-                        "col-span-2",
-                        "col-span-4",
-                        "col-span-2",
-                      ][idx]
-                    }`}
-                  >
-                    <img
-                      src={banner.src}
-                      alt={banner.alt}
-                      className="w-full h-full object-cover rounded-xl"
-                    />
-                  </div>
-                ))}
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-8 auto-rows-[255px]">
+                {(isMobile ? banners.slice(0, 2) : banners).map(
+                  (banner, idx) => {
+                    // Fallback to col-span-1 on mobile, and custom span on lg+
+                    const colSpanClass = isMobile
+                      ? "col-span-1"
+                      : [
+                          "lg:col-span-5",
+                          "lg:col-span-3",
+                          "lg:col-span-2",
+                          "lg:col-span-4",
+                          "lg:col-span-2",
+                        ][idx] || "lg:col-span-2";
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-2xl overflow-hidden shadow bg-white p-3 ${colSpanClass}`}
+                      >
+                        <img
+                          src={banner.src}
+                          alt={banner.alt}
+                          className="w-full h-full object-cover rounded-xl"
+                        />
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
