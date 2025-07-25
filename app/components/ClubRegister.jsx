@@ -203,6 +203,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="clubName"
                   value={form.clubName}
                   onChange={handleChange}
+                  placeholder="e.g. Durban Golf Club"
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
@@ -234,6 +235,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="clubDescription"
                   value={form.clubDescription}
                   onChange={handleChange}
+                  placeholder="Brief description of your club..."
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 w-full h-28"
                 />
               </div>
@@ -248,6 +250,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="captainFirstName"
                   value={form.captainFirstName}
                   onChange={handleChange}
+                  placeholder="e.g. Sipho"
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
@@ -262,6 +265,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="captainLastName"
                   value={form.captainLastName}
                   onChange={handleChange}
+                  placeholder="e.g. Nkosi"
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
@@ -276,6 +280,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="captainEmail"
                   value={form.captainEmail}
                   onChange={handleChange}
+                  placeholder="e.g. sipho@example.com"
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
@@ -290,6 +295,7 @@ const ClubRegister = ({ setActiveTab }) => {
                   name="captainContactNo"
                   value={form.captainContactNo}
                   onChange={handleChange}
+                  placeholder="e.g. 061 234 5678"
                   className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
