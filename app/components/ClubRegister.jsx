@@ -7,7 +7,7 @@ import { API_BASE_URL } from "../lib/config";
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../lib/firebase";
 
-const ClubRegister = () => {
+const ClubRegister = ({ setActiveTab }) => {
   const [token, setToken] = useState(null);
   const [successful, setSuccessful] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -121,120 +121,189 @@ const ClubRegister = () => {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 pt-32 pb-14">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-2xl font-bold text-center text-dark-gold mb-6">
-              Club Registration
+        <div className="space-y-4">
+          {/* Top-right cancel button */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => setActiveTab("My Dashboard")}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg cursor-pointer hover:bg-gray-400 transition"
+            >
+              Cancel
+            </button>
+          </div>
+
+          {/* Main card */}
+          <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-gray-700">
+              Create a Club
             </h2>
-            <form onSubmit={handleRegister} className="space-y-4">
-              {/* Club Info */}
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold mb-2">Club Information</h3>
+
+            {/* Logo Upload */}
+            <div className="flex flex-col items-start space-y-2">
+              <label className="text-sm font-medium text-gray-600">
+                Club Logo
+              </label>
+              <div className="relative group w-60 h-48 border border-gray-300 rounded-lg overflow-hidden">
+                {form.clubLogo ? (
+                  <>
+                    <img
+                      src={URL.createObjectURL(form.clubLogo)}
+                      alt="Preview"
+                      className="object-cover w-full h-full"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("logoInput").click()
+                        }
+                        className="px-3 py-1 text-white bg-blue-400 text-sm font-medium rounded-xl shadow cursor-pointer"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                      No Logo Selected
+                    </div>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("logoInput").click()
+                        }
+                        className="px-3 py-1 text-white bg-blue-400 text-sm font-medium rounded-xl shadow cursor-pointer"
+                      >
+                        Upload
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+              <input
+                type="file"
+                id="logoInput"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              {/* Club Name */}
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Club Name
+                </label>
                 <input
                   type="text"
                   name="clubName"
-                  placeholder="Club Name"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
                   value={form.clubName}
                   onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
               </div>
 
-              {/* Private club options */}
-              <div className="mb-4">
-                <div className="flex items-center mb-2">
+              {/* Club Type */}
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Private Club
+                </label>
+                <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    name="isPrivateClub" // renamed
-                    id="isPrivateClub"
-                    className="mr-2"
+                    name="isPrivateClub"
                     checked={form.isPrivateClub}
                     onChange={handleChange}
+                    className="w-4 h-4 text-dark-gold focus:ring-dark-gold"
                   />
-                  <label
-                    htmlFor="isPrivateClub"
-                    className="text-lg font-semibold"
-                  >
-                    Private Club
-                  </label>
+                  <span className="text-sm text-gray-500">Yes</span>
                 </div>
-
-                <>
-                  <div className="mb-2">
-                    <label className="block font-medium mb-1">Club Logo</label>
-                    <input
-                      type="file"
-                      name="clubLogo"
-                      className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="block font-medium mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      name="clubDescription"
-                      placeholder="Enter club description..."
-                      className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold h-24"
-                      value={form.clubDescription}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </>
               </div>
 
-              {/* Captain Info */}
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold mb-2">
-                  Captain's Information
-                </h3>
+              {/* Club Description (full width) */}
+              <div className="col-span-1 md:col-span-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Description
+                </label>
+                <textarea
+                  name="clubDescription"
+                  value={form.clubDescription}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 w-full h-28"
+                />
+              </div>
+
+              {/* Captain Details */}
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Captain First Name
+                </label>
                 <input
                   type="text"
                   name="captainFirstName"
-                  placeholder="Captain's First Name"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
                   value={form.captainFirstName}
                   onChange={handleChange}
-                  required
-                />
-                <input
-                  type="text"
-                  name="captainLastName"
-                  placeholder="Captain's Last Name"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.captainLastName}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="email"
-                  name="captainEmail"
-                  placeholder="Captain's Email"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.captainEmail}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="tel"
-                  name="captainContactNo"
-                  placeholder="Captain's Contact No."
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-dark-gold mb-2"
-                  value={form.captainContactNo}
-                  onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
                   required
                 />
               </div>
 
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Captain Last Name
+                </label>
+                <input
+                  type="text"
+                  name="captainLastName"
+                  value={form.captainLastName}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Captain Email
+                </label>
+                <input
+                  type="email"
+                  name="captainEmail"
+                  value={form.captainEmail}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Captain Contact No.
+                </label>
+                <input
+                  type="tel"
+                  name="captainContactNo"
+                  value={form.captainContactNo}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
               <button
-                type="submit"
-                className="w-full bg-dark-gold text-black py-2 rounded font-bold hover:bg-yellow-600 transition"
+                onClick={handleRegister}
+                className="px-4 py-2 bg-dark-green text-white rounded-lg transition"
               >
-                Register
+                Submit
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../lib/firebase";
 import { API_BASE_URL } from "../lib/config";
 import { logout } from "../utils/logout";
+import ClubRegister from "../components/ClubRegister";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("My Dashboard");
@@ -818,7 +819,41 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {activeTab === "Create a club" && (
+            <ClubRegister setActiveTab={setActiveTab} />
+          )}
+
           {activeTab === "Subscriptions" && (
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative w-full  h-[75vh]  rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/404.jpg"
+                  alt="Subscriptions Placeholder"
+                  fill
+                  quality={100}
+                  className="object-cover rounded-2xl"
+                  priority
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Host A Golf Day" && (
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative w-full  h-[75vh]  rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/404.jpg"
+                  alt="Subscriptions Placeholder"
+                  fill
+                  quality={100}
+                  className="object-cover rounded-2xl"
+                  priority
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Hosted Golf Days" && (
             <div className="flex flex-col items-center justify-center">
               <div className="relative w-full  h-[75vh]  rounded-2xl overflow-hidden shadow-lg">
                 <Image
