@@ -793,11 +793,16 @@ export default function DashboardPage() {
                         {/* Logo vertically centered and protected from shrinking */}
                         <div className="w-14 flex items-center justify-center shrink-0">
                           {club.logo_url ? (
-                            <img
-                              src={club.logo_url}
-                              alt={club.name}
-                              className="w-12 h-12 object-cover rounded-full"
-                            />
+                            <div className="w-12 h-12 relative rounded-full overflow-hidden">
+                              <Image
+                                src={club.logo_url}
+                                alt={club.name}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                                priority={false} // lazy-load
+                              />
+                            </div>
                           ) : (
                             <div className="w-12 h-12 bg-gray-200 rounded-full" />
                           )}
