@@ -829,7 +829,21 @@ export default function DashboardPage() {
             <ClubRegister setActiveTab={setActiveTab} />
           )}
 
-          {activeTab === "Host A Golf Day" && <HostEventForm />}
+          {activeTab === "Host A Golf Day" && (
+            <div className="space-y-6">
+              {/* Cancel button top-right */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setActiveTab("My Dashboard")}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg cursor-pointer hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <HostEventForm setActiveTab={setActiveTab} />
+            </div>
+          )}
 
           {activeTab === "Subscriptions" && (
             <div className="flex flex-col items-center justify-center">

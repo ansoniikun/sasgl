@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export default function HostEventForm({ onSubmit }) {
+export default function EventDetailsForm({ onSubmit }) {
   const [form, setForm] = useState({
     eventTitle: "",
     description: "",

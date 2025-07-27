@@ -10,7 +10,8 @@ const HostEventForm = () => {
   const [currentPackageIndex, setCurrentPackageIndex] = useState(0);
   const [packages, setPackages] = useState([]);
 
-  const handleEventSubmit = (data, numPackages) => {
+  const handleEventSubmit = (data) => {
+    const numPackages = parseInt(data.packages, 10); // Convert to number
     setEventData(data);
     setPackageCount(numPackages);
     setStep("packages");
@@ -20,17 +21,18 @@ const HostEventForm = () => {
     setPackages((prev) => [...prev, pkg]);
 
     if (currentPackageIndex + 1 < packageCount) {
-      setCurrentPackageIndex(currentPackageIndex + 1);
+      setCurrentPackageIndex((prev) => prev + 1);
     } else {
       setStep("confirmation");
     }
   };
 
   return (
-    <div className="">
+    <div>
       {step === "event" && <EventDetailsForm onSubmit={handleEventSubmit} />}
       {step === "packages" && (
         <PackageForm
+          key={currentPackageIndex} // 🔑 Forces remount
           packageIndex={currentPackageIndex}
           onSubmit={handlePackageSubmit}
         />
