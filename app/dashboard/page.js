@@ -124,6 +124,8 @@ export default function DashboardPage() {
         console.error("Error fetching user clubs:", err);
       }
     };
+
+    fetchUserClubs();
   }, [router]);
 
   useEffect(() => {
