@@ -3,7 +3,7 @@ import EventDetailsForm from "./EventDetailsForm";
 import PackageForm from "./PackageForm";
 import ConfirmationPage from "./ConfirmationPage";
 
-const HostEventForm = () => {
+const HostEventForm = ({ setActiveTab }) => {
   const [step, setStep] = useState("event"); // event → packages → confirm
   const [eventData, setEventData] = useState(null);
   const [packageCount, setPackageCount] = useState(0);
@@ -38,7 +38,15 @@ const HostEventForm = () => {
         />
       )}
       {step === "confirmation" && (
-        <ConfirmationPage eventData={eventData} packages={packages} />
+        <ConfirmationPage
+          eventData={eventData}
+          packages={packages}
+          onFinalSubmit={() => {
+            // example: navigate away or reset UI
+            alert("Event successfully submitted!");
+            setActiveTab("My Dashboard");
+          }}
+        />
       )}
     </div>
   );

@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../lib/firebase";
 
 export default function EventDetailsForm({ onSubmit }) {
+  const [posterFile, setPosterFile] = useState(null);
+  const [posterPreview, setPosterPreview] = useState(null);
   const [form, setForm] = useState({
     eventTitle: "",
     description: "",
@@ -21,9 +25,40 @@ export default function EventDetailsForm({ onSubmit }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    if (!posterFile) {
+      alert("Please upload a poster.");
+      return;
+    }
+
+    try {
+      const cleanTitle = form.eventTitle
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_"); // e.g. "Baroka Cares" => "baroka_cares"
+      const fileRef = ref(
+        storage,
+        `golf_day_posters/${cleanTitle}_${Date.now()}.${posterFile.name
+          .split(".")
+          .pop()}`
+      );
+
+      await uploadBytes(fileRef, posterFile);
+
+      const downloadURL = await getDownloadURL(fileRef);
+
+      const updatedForm = {
+        ...form,
+        poster: downloadURL,
+      };
+
+      onSubmit(updatedForm);
+    } catch (error) {
+      console.error("Error uploading poster:", error);
+      alert("Failed to upload poster. Please try again.");
+    }
   };
 
   return (
@@ -37,16 +72,29 @@ export default function EventDetailsForm({ onSubmit }) {
         <label className="text-sm font-medium text-gray-700 mb-2 block">
           Upload Poster *
         </label>
-        <div className="w-full sm:w-64 aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center bg-gray-50">
+        <div className="w-full sm:w-64 aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center bg-gray-50 relative overflow-hidden">
           <input
-            type="text"
-            name="poster"
-            value={form.poster}
-            onChange={handleChange}
-            placeholder="e.g. URL or file name"
-            className="text-center text-sm text-gray-600 bg-transparent outline-none w-full px-2"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setPosterFile(file);
+                setPosterPreview(URL.createObjectURL(file));
+              }
+            }}
+            className="absolute w-full h-full opacity-0 cursor-pointer"
             required
           />
+          {posterPreview ? (
+            <img
+              src={posterPreview}
+              alt="Preview"
+              className="object-cover w-full h-full rounded-xl"
+            />
+          ) : (
+            <span className="text-sm text-gray-400">Click to upload</span>
+          )}
         </div>
       </div>
 

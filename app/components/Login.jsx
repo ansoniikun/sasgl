@@ -133,9 +133,14 @@ const Login = () => {
               <p className="text-gray-500 mb-0">Phone Number</p>
               <input
                 type="tel"
-                placeholder="+27 71 234 5678"
+                placeholder="071 234 5678"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  if (!input.startsWith("+")) {
+                    setPhoneNumber(input);
+                  }
+                }}
                 required
                 className="w-full px-4 py-2 border placeholder:text-sm placeholder-gray-300 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
               />
