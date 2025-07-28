@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [joinStatuses, setJoinStatuses] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [totalGames, setTotalGames] = useState(0);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -123,7 +124,6 @@ export default function DashboardPage() {
         console.error("Error fetching user clubs:", err);
       }
     };
-    fetchUserClubs();
   }, [router]);
 
   useEffect(() => {
@@ -182,6 +182,27 @@ export default function DashboardPage() {
     };
 
     fetchJoinClubs();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch stats");
+
+        const data = await res.json();
+        setTotalGames(data.events_played || 0);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   function handleProfileChange(e) {
@@ -554,6 +575,20 @@ export default function DashboardPage() {
                 Welcome, {profileData.name || "User"}
               </h2>
 
+              <div className="bg-white shadow rounded-xl p-4 max-w-xs md:max-w-3xs">
+                <div className="flex space-x-2">
+                  <span className="border rounded-lg bg-dark-green text-white text-3xl py-3 px-5 font-semibold">
+                    {totalGames}
+                  </span>
+                  <div className="flex flex-col justify-center ">
+                    <p className="text-sm text-gray-500">Total Games Played</p>
+                    <p className="text-lg font-semibold text-dark-green">
+                      Total Games
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid gap-5 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-8 auto-rows-[255px]">
                 {(isMobile ? banners.slice(0, 2) : banners).map(
                   (banner, idx) => {
@@ -830,19 +865,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === "Host A Golf Day" && (
-            <div className="space-y-6">
-              {/* Cancel button top-right */}
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setActiveTab("My Dashboard")}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg cursor-pointer hover:bg-gray-400 transition"
-                >
-                  Cancel
-                </button>
-              </div>
-
-              <HostEventForm setActiveTab={setActiveTab} />
-            </div>
+            <HostEventForm setActiveTab={setActiveTab} />
           )}
 
           {activeTab === "Subscriptions" && (
