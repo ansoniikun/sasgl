@@ -532,7 +532,9 @@ export default function DashboardPage() {
               </div>
               <h1 className="text-sm">/ Dashboard</h1>
             </div>
-            <span className="text-ash-gray mt-1 font-medium">{activeTab}</span>
+            <span className="text-ash-gray mt-1 font-medium">
+              {activeTab == "Dashboard" ? clubData?.name : activeTab}
+            </span>
           </div>
 
           <div className="flex gap-4 items-center">
