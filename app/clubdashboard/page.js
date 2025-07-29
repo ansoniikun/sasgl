@@ -573,7 +573,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Tabs */}
-        <main className="p-6 space-y-6 pt-24 flex-grow">
+        <main className="p-6 space-y-6 pt-24 lg:pt-5 flex-grow">
           {activeTab === "Dashboard" && (
             <>
               <div className="grid grid-cols-3 gap-4">
