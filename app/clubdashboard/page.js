@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [logoFile, setLogoFile] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
 
   const [logoUrl, setLogoUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,6 +125,22 @@ export default function DashboardPage() {
 
         setCurrentUserRole(user.role);
         setClubData(club);
+
+        // Get games played by current user in this club
+        try {
+          const gamesRes = await fetch(
+            `${API_BASE_URL}/api/clubs/${club.id}/user/games-played`,
+            { headers }
+          );
+          if (gamesRes.ok) {
+            const gamesData = await gamesRes.json();
+            setGamesPlayed(gamesData.gamesPlayed || 0);
+          } else {
+            console.error("Failed to fetch games played");
+          }
+        } catch (err) {
+          console.error("Error fetching games played:", err);
+        }
 
         const [membersRes, eventsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/clubs/${club.id}/members`, { headers }),
@@ -559,7 +576,7 @@ export default function DashboardPage() {
         <main className="p-6 space-y-6 pt-24 flex-grow">
           {activeTab === "Dashboard" && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="bg-white shadow rounded-xl p-4">
                   <p className="text-sm text-gray-500">Total Members</p>
                   <p className="text-lg font-semibold text-dark-green">
@@ -570,6 +587,12 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-500">Total Events Hosted</p>
                   <p className="text-lg font-semibold text-dark-green">
                     {clubEvents.length} Games
+                  </p>
+                </div>
+                <div className="bg-white shadow rounded-xl p-4">
+                  <p className="text-sm text-gray-500">Events You Played</p>
+                  <p className="text-lg font-semibold text-dark-green">
+                    {gamesPlayed} Games
                   </p>
                 </div>
               </div>

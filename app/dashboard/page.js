@@ -115,7 +115,7 @@ export default function DashboardPage() {
         });
         if (res.ok) {
           const clubs = await res.json();
-          console.log("Fetched clubs:", clubs);
+          console.log("Fetched clubs:");
           setUserClubs(clubs);
         } else {
           console.error("Failed to fetch clubs", await res.text());
@@ -577,7 +577,7 @@ export default function DashboardPage() {
                 Welcome, {profileData.name || "User"}
               </h2>
 
-              <div className="bg-white shadow rounded-xl p-4 max-w-xs md:max-w-3xs">
+              {/*  <div className="bg-white shadow rounded-xl p-4 max-w-xs md:max-w-3xs">
                 <div className="flex space-x-2">
                   <span className="border rounded-lg bg-dark-green text-white text-3xl py-3 px-5 font-semibold">
                     {totalGames}
@@ -589,7 +589,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div>*/}
 
               <div className="grid gap-5 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-8 auto-rows-[255px]">
                 {(isMobile ? banners.slice(0, 2) : banners).map(
