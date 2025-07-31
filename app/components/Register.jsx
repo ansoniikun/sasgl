@@ -181,7 +181,7 @@ const Register = () => {
                 label: "Phone Number",
                 type: "tel",
                 field: "phoneNumber",
-                placeholder: "071 234 5678",
+                placeholder: "0712345678",
               },
               {
                 label: "Password",
@@ -228,8 +228,17 @@ const Register = () => {
                     placeholder={placeholder}
                     className="w-full px-4 py-2 border placeholder-gray-300 placeholder:text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-green"
                     value={form[field]}
-                    onChange={(e) => dispatch({ field, value: e.target.value })}
-                    required={field !== "email"}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Block input if it starts with '+'
+                      if (field === "phoneNumber" && value.startsWith("+")) {
+                        setError("Phone number should not start with '+'");
+                        return;
+                      }
+                      if (error && field === "phoneNumber") setError(""); // Clear error
+                      dispatch({ field, value });
+                    }}
+                    required
                   />
                 </div>
               );

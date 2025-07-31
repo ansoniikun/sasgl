@@ -1,0 +1,64 @@
+"filename", "language", "JSON with Comments", "JavaScript", "Markdown", "XML", "JSON", "JavaScript JSX", "PostCSS", "comment", "blank", "total"
+"/home/gustavo/dev/sasgl/README.md", "Markdown", 0, 0, 23, 0, 0, 0, 0, 0, 14, 37
+"/home/gustavo/dev/sasgl/app/ClientWrapper.js", "JavaScript", 0, 9, 0, 0, 0, 0, 0, 0, 4, 13
+"/home/gustavo/dev/sasgl/app/admin-pnl/page.js", "JavaScript", 0, 78, 0, 0, 0, 0, 0, 1, 16, 95
+"/home/gustavo/dev/sasgl/app/clubdashboard/page.js", "JavaScript", 0, 1165, 0, 0, 0, 0, 0, 6, 65, 1236
+"/home/gustavo/dev/sasgl/app/components/About.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 72, 0, 6, 8, 86
+"/home/gustavo/dev/sasgl/app/components/AdminEvents.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 428, 0, 5, 29, 462
+"/home/gustavo/dev/sasgl/app/components/Carousel.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 48, 0, 2, 8, 58
+"/home/gustavo/dev/sasgl/app/components/ClubCapture.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 200, 0, 12, 27, 239
+"/home/gustavo/dev/sasgl/app/components/ClubDashboardNav.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 139, 0, 0, 18, 157
+"/home/gustavo/dev/sasgl/app/components/ClubEventCard.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 174, 0, 3, 20, 197
+"/home/gustavo/dev/sasgl/app/components/ClubRegister.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 302, 0, 8, 30, 340
+"/home/gustavo/dev/sasgl/app/components/Clubs.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 103, 0, 1, 9, 113
+"/home/gustavo/dev/sasgl/app/components/ConfirmationPage.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 152, 0, 4, 14, 170
+"/home/gustavo/dev/sasgl/app/components/Contact.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 144, 0, 4, 18, 166
+"/home/gustavo/dev/sasgl/app/components/CreateClubEvents.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 111, 0, 2, 17, 130
+"/home/gustavo/dev/sasgl/app/components/DashboardNav.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 139, 0, 5, 19, 163
+"/home/gustavo/dev/sasgl/app/components/EventDetailsForm.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 249, 0, 5, 22, 276
+"/home/gustavo/dev/sasgl/app/components/EventEditModal.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 91, 0, 0, 10, 101
+"/home/gustavo/dev/sasgl/app/components/Events.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 155, 0, 2, 7, 164
+"/home/gustavo/dev/sasgl/app/components/Footer.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 89, 0, 6, 10, 105
+"/home/gustavo/dev/sasgl/app/components/Hero.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 112, 0, 5, 18, 135
+"/home/gustavo/dev/sasgl/app/components/HostEventForm.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 48, 0, 1, 7, 56
+"/home/gustavo/dev/sasgl/app/components/JoinClub.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 159, 0, 2, 23, 184
+"/home/gustavo/dev/sasgl/app/components/JoinUs.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 30, 0, 2, 4, 36
+"/home/gustavo/dev/sasgl/app/components/Leagues.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 175, 0, 0, 16, 191
+"/home/gustavo/dev/sasgl/app/components/Login.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 156, 0, 13, 27, 196
+"/home/gustavo/dev/sasgl/app/components/Navbar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 77, 0, 5, 10, 92
+"/home/gustavo/dev/sasgl/app/components/PackageForm.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 135, 0, 0, 10, 145
+"/home/gustavo/dev/sasgl/app/components/Register.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 284, 0, 5, 29, 318
+"/home/gustavo/dev/sasgl/app/components/Services.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 54, 0, 3, 6, 63
+"/home/gustavo/dev/sasgl/app/components/Users.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 59, 0, 0, 5, 64
+"/home/gustavo/dev/sasgl/app/createclub/page.js", "JavaScript", 0, 70, 0, 0, 0, 0, 0, 0, 13, 83
+"/home/gustavo/dev/sasgl/app/dashboard/page.js", "JavaScript", 0, 831, 0, 0, 0, 0, 0, 28, 69, 928
+"/home/gustavo/dev/sasgl/app/edit-club/page.js", "JavaScript", 0, 142, 0, 0, 0, 0, 0, 4, 27, 173
+"/home/gustavo/dev/sasgl/app/edit-profile/page.js", "JavaScript", 0, 155, 0, 0, 0, 0, 0, 3, 28, 186
+"/home/gustavo/dev/sasgl/app/forgot-password/page.js", "JavaScript", 0, 115, 0, 0, 0, 0, 0, 0, 19, 134
+"/home/gustavo/dev/sasgl/app/globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 35, 2, 7, 44
+"/home/gustavo/dev/sasgl/app/joinclub/page.js", "JavaScript", 0, 13, 0, 0, 0, 0, 0, 1, 3, 17
+"/home/gustavo/dev/sasgl/app/layout.js", "JavaScript", 0, 33, 0, 0, 0, 0, 0, 0, 6, 39
+"/home/gustavo/dev/sasgl/app/leagues/[id]/page.js", "JavaScript", 0, 80, 0, 0, 0, 0, 0, 0, 13, 93
+"/home/gustavo/dev/sasgl/app/leagues/page.js", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"/home/gustavo/dev/sasgl/app/lib/config.js", "JavaScript", 0, 1, 0, 0, 0, 0, 0, 0, 1, 2
+"/home/gustavo/dev/sasgl/app/lib/firebase.js", "JavaScript", 0, 16, 0, 0, 0, 0, 0, 0, 4, 20
+"/home/gustavo/dev/sasgl/app/login/page.js", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"/home/gustavo/dev/sasgl/app/old-clubdashboard/page.js", "JavaScript", 0, 561, 0, 0, 0, 0, 0, 2, 50, 613
+"/home/gustavo/dev/sasgl/app/old-dashboard/page.js", "JavaScript", 0, 125, 0, 0, 0, 0, 0, 0, 25, 150
+"/home/gustavo/dev/sasgl/app/page.js", "JavaScript", 0, 21, 0, 0, 0, 0, 0, 0, 2, 23
+"/home/gustavo/dev/sasgl/app/register/page.js", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"/home/gustavo/dev/sasgl/app/tournaments/page.js", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"/home/gustavo/dev/sasgl/app/utils/checkSession.js", "JavaScript", 0, 16, 0, 0, 0, 0, 0, 0, 5, 21
+"/home/gustavo/dev/sasgl/app/utils/logout.js", "JavaScript", 0, 8, 0, 0, 0, 0, 0, 3, 4, 15
+"/home/gustavo/dev/sasgl/cors.json", "JSON", 0, 0, 0, 0, 14, 0, 0, 0, 1, 15
+"/home/gustavo/dev/sasgl/jsconfig.json", "JSON with Comments", 7, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/home/gustavo/dev/sasgl/next.config.mjs", "JavaScript", 0, 17, 0, 0, 0, 0, 0, 1, 2, 20
+"/home/gustavo/dev/sasgl/package-lock.json", "JSON", 0, 0, 0, 0, 4201, 0, 0, 0, 1, 4202
+"/home/gustavo/dev/sasgl/package.json", "JSON", 0, 0, 0, 0, 27, 0, 0, 0, 1, 28
+"/home/gustavo/dev/sasgl/postcss.config.mjs", "JavaScript", 0, 4, 0, 0, 0, 0, 0, 0, 2, 6
+"/home/gustavo/dev/sasgl/public/file.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"/home/gustavo/dev/sasgl/public/globe.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"/home/gustavo/dev/sasgl/public/next.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"/home/gustavo/dev/sasgl/public/vercel.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"/home/gustavo/dev/sasgl/public/window.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"Total", "-", 7, 3508, 23, 5, 4242, 3885, 35, 152, 812, 12669

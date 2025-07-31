@@ -113,17 +113,19 @@ export default function DashboardPage() {
           setUserClubs(userClubsData);
         }
 
-        const [userRes, clubRes] = await Promise.all([
+        const [userRes, clubRes, roleRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/users/me`, { headers }),
           fetch(`${API_BASE_URL}/api/clubs/${clubId}`, { headers }),
+          fetch(`${API_BASE_URL}/api/clubs/${clubId}/role`, { headers }),
         ]);
 
-        if (!userRes.ok || !clubRes.ok) return;
+        if (!userRes.ok || !clubRes.ok || !roleRes.ok) return;
 
         const user = await userRes.json();
         const club = await clubRes.json();
+        const clubRole = await roleRes.json();
 
-        setCurrentUserRole(user.role);
+        setCurrentUserRole(clubRole.role);
         setClubData(club);
 
         // Get games played by current user in this club
@@ -339,6 +341,38 @@ export default function DashboardPage() {
     } catch (err) {
       console.error("Error removing member:", err);
       alert("An error occurred while removing member");
+    }
+  };
+
+  const changeRole = async (memberId, newRole) => {
+    const token = getToken();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/clubs/${selectedClubId}/members/${memberId}/role`,
+        {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ newRole }),
+        }
+      );
+
+      if (res.ok) {
+        const updatedMembers = members.map((m) =>
+          m.id === memberId ? { ...m, role: newRole } : m
+        );
+        setMembers(updatedMembers);
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to change role");
+      }
+    } catch (err) {
+      console.error("Role change error:", err);
+      alert("Error changing role");
     }
   };
 
@@ -718,7 +752,9 @@ export default function DashboardPage() {
                             />
                           </div>
                         </td>
+
                         <td className="p-3 capitalize">{member.role}</td>
+
                         <td className="p-3 capitalize">{member.name}</td>
                         <td className="p-3">{member.email}</td>
                         <td className="p-3">
@@ -750,16 +786,49 @@ export default function DashboardPage() {
                           ) : member.status === "approved" &&
                             (currentUserRole === "captain" ||
                               currentUserRole === "chairman") ? (
-                            <div className="flex gap-4 items-center">
-                              <span className="capitalize">
-                                {member.status}
-                              </span>
+                            <div className="flex flex-col gap-1 items-start sm:items-center sm:flex-row">
                               <button
                                 onClick={() => removeMember(member.id)}
                                 className="px-3 py-1 bg-red-200 text-red-800 rounded-3xl hover:bg-red-300 cursor-pointer"
                               >
                                 Remove
                               </button>
+
+                              {member.role !== "chairman" && (
+                                <>
+                                  {member.role !== "captain" && (
+                                    <button
+                                      onClick={() =>
+                                        changeRole(member.id, "captain")
+                                      }
+                                      className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-3xl hover:bg-yellow-300 text-xs"
+                                    >
+                                      Make Captain
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() =>
+                                      changeRole(member.id, "chairman")
+                                    }
+                                    className="px-3 py-1 bg-blue-200 text-blue-800 rounded-3xl hover:bg-blue-300 text-xs"
+                                  >
+                                    Make Chairman
+                                  </button>
+                                </>
+                              )}
+
+                              {["captain", "chairman"].includes(
+                                member.role
+                              ) && (
+                                <button
+                                  onClick={() =>
+                                    changeRole(member.id, "player")
+                                  }
+                                  className="px-3 py-1 bg-gray-200 text-gray-800 rounded-3xl hover:bg-gray-300 text-xs"
+                                >
+                                  Demote to Player
+                                </button>
+                              )}
                             </div>
                           ) : (
                             member.status
